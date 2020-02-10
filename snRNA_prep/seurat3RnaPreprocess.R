@@ -54,7 +54,7 @@ rnaAggr <- RunUMAP(rnaAggr, dims = 1:20, verbose = TRUE, reduction = "harmony")
 
 # visualize the clustering
 # DimPlot(rnaAggr, reduction = "UMAP", assay = "SCT")
-p1 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE)
+p1 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("Original Clustering")
 
 celltype.markers <- c("CUBN","LRP2","HAVCR1","SLC5A1","SLC5A2", # PT and PT-KIM1+ markers
                       "CFH", # PEC
@@ -84,11 +84,11 @@ levels(rnaAggr) <- c("PCT","PT_KIM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA",
 rnaAggr@meta.data$celltype <- rnaAggr@active.ident
 
 # redraw umap and dotplot with reordered idents
-p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE)
+p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("Annotated Celltypes")
 p4 <- DotPlot(rnaAggr, features = celltype.markers) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 # draw pdf plots for before and after annotation
-pdf("umap.rnaAggr.pdf")
+pdf(here("plots","umap.rnaAggr.pdf"))
 p1
 p2
 p3
@@ -97,5 +97,5 @@ dev.off()
 
 print("Saving aggregated snRNAseq object as rnaAggr.rds in:")
 here("cellrangerRnaAggr")
-saveRDS(rnaAggr, file = here("cellrangerRnaAggr", file = "rnaAggr.rds"))
+saveRDS(rnaAggr, file = here("cellrangerRnaAggr","rnaAggr.rds"))
         
