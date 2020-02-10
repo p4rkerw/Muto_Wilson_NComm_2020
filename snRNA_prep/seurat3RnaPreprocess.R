@@ -1,11 +1,8 @@
 # this script will preprocess, filter, and annotate aggregated healthy kidney snRNAseq libraries
-analysisDir <- "G:/diabneph"
-setwd(analysisDir)
-
 library(Seurat) # 3.0.2
 library(ggplot2)
 library(harmony) # 1.0
-library(here) # set all filepaths relative to analysis directory eg. G:/diabneph
+library(here) # set all filepaths relative to analysis directory of an R project eg. G:/diabneph
 set.seed(1234)
 sessionInfo()
 here()
@@ -88,6 +85,7 @@ p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitl
 p4 <- DotPlot(rnaAggr, features = celltype.markers) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 # draw pdf plots for before and after annotation
+dir.create("plots", showWarnings = FALSE)
 pdf(here("plots","umap.rnaAggr.pdf"))
 p1
 p2
