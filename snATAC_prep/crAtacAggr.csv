@@ -1,0 +1,11 @@
+library_id,fragments,cells,peaks,group
+Control_1,/mnt/g/scratch/Control_1/outs/fragments.tsv.gz,/mnt/g/scratch/Control_1/outs/singlecell.csv,/mnt/g/scratch/Control_1/outs/peaks.bed,ctrl
+Control_2,/mnt/g/scratch/Control_2/outs/fragments.tsv.gz,/mnt/g/scratch/Control_2/outs/singlecell.csv,/mnt/g/scratch/Control_2/outs/peaks.bed,ctrl
+Control_3,/mnt/g/scratch/Control_3/outs/fragments.tsv.gz,/mnt/g/scratch/Control_3/outs/singlecell.csv,/mnt/g/scratch/Control_3/outs/peaks.bed,ctrl
+Control_4,/mnt/g/scratch/Control_4/outs/fragments.tsv.gz,/mnt/g/scratch/Control_4/outs/singlecell.csv,/mnt/g/scratch/Control_4/outs/peaks.bed,ctrl
+Control_5,/mnt/g/scratch/Control_5/outs/fragments.tsv.gz,/mnt/g/scratch/Control_5/outs/singlecell.csv,/mnt/g/scratch/Control_5/outs/peaks.bed,ctrl
+DN_1,/mnt/g/scratch/DN_1/outs/fragments.tsv.gz,/mnt/g/scratch/DN_1/outs/singlecell.csv,/mnt/g/scratch/DN_1/outs/peaks.bed,diabetes
+DN_2,/mnt/g/scratch/DN_2/outs/fragments.tsv.gz,/mnt/g/scratch/DN_2/outs/singlecell.csv,/mnt/g/scratch/DN_2/outs/peaks.bed,diabetes
+DN_3,/mnt/g/scratch/DN_3/outs/fragments.tsv.gz,/mnt/g/scratch/DN_3/outs/singlecell.csv,/mnt/g/scratch/DN_3/outs/peaks.bed,diabetes
+DN_4,/mnt/g/scratch/DN_4/outs/fragments.tsv.gz,/mnt/g/scratch/DN_4/outs/singlecell.csv,/mnt/g/scratch/DN_4/outs/peaks.bed,diabetes
+DN_5,/mnt/g/scratch/DN_5/outs/fragments.tsv.gz,/mnt/g/scratch/DN_5/outs/singlecell.csv,/mnt/g/scratch/DN_5/outs/peaks.bed,diabetes
