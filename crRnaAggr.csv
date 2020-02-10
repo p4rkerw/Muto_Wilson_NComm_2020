@@ -1,0 +1,6 @@
+library_id,molecule_h5,group
+Cont1,Cont1/outs/molecule_info.h5,ctrl
+Cont2,Cont2/outs/molecule_info.h5,ctrl
+Cont3,Cont3/outs/molecule_info.h5,ctrl
+Cont4,Cont4/outs/molecule_info.h5,ctrl
+Cont5,Cont5/outs/molecule_info.h5,ctrl
