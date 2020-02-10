@@ -1,4 +1,7 @@
 # this script will preprocess, filter, and annotate aggregated healthy kidney snRNAseq libraries
+analysisDir <- "G:/diabneph"
+setwd(analysisDir)
+
 library(Seurat) # 3.0.2
 library(ggplot2)
 library(harmony) # 1.0
@@ -75,16 +78,24 @@ rnaAggr[["orig.clusters"]] <- Idents(object = rnaAggr) # stash cluster idents pr
 new.cluster.ids <- c("PCT","DCT1","CNT","TAL","PCT","TAL","ICA","TAL","PC","PEC","ENDO","PT_KIM1","MES","PODO","DCT2","ICB","ENDO","ENDO")
 names(new.cluster.ids) <- levels(rnaAggr)
 rnaAggr <- RenameIdents(rnaAggr, new.cluster.ids)
+
+# reorder the idents and save in celltype slot in metadata
+levels(rnaAggr) <- c("PCT","PT_KIM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB","PODO","ENDO","MES")
 rnaAggr@meta.data$celltype <- rnaAggr@active.ident
 
+# redraw umap and dotplot with reordered idents
 p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE)
 p4 <- DotPlot(rnaAggr, features = celltype.markers) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-# create new disease-specific celltype-speciifc identity for FindMarkers function
-rnaAggr@meta.data$celltype.stim <- paste(Idents(rnaAggr), rnaAggr@meta.data$disease, sep ="_")
-rnaAggr$celltype <- Idents(rnaAggr)
-Idents(rnaAggr) <- "celltype.stim"
+# draw pdf plots for before and after annotation
+pdf("umap.rnaAggr.pdf")
+p1
+p2
+p3
+p4
+dev.off()
 
 print("Saving aggregated snRNAseq object as rnaAggr.rds in:")
 here("cellrangerRnaAggr")
-saveRDS(rnaAggr, file = "rnaAggr.rds")
+saveRDS(rnaAggr, file = here("cellrangerRnaAggr", file = "rnaAggr.rds"))
+        
