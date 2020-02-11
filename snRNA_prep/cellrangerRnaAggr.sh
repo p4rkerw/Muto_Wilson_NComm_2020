@@ -5,6 +5,6 @@
 
 cellranger aggr \
 --id=cellranger_rna_aggr_control \
---csv=crRnaAggr.csv \
+--csv=crRnaAggr_control.csv \
 --normalize=none \
 --nosecondary

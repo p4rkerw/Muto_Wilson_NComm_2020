@@ -94,6 +94,7 @@ p4
 dev.off()
 
 print("Saving aggregated snRNAseq object as rnaAggr.rds in:")
-here("cellrangerRnaAggr")
-saveRDS(rnaAggr, file = here("cellrangerRnaAggr","rnaAggr.rds"))
+dir.create("cellranger_rna_prep")
+here("cellranger_rna_prep")
+saveRDS(rnaAggr, file = here("cellranger_rna_prep","rnaAggr.rds"))
         

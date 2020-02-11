@@ -5,7 +5,7 @@
 # aggregate the output
 cellranger-atac aggr \
 --id=cellranger_atac_aggr_control \
---csv=crAtacAggr.csv \
+--csv=crAtacAggr_control.csv \
 --reference="/home/parkerw/reference/refdata-cellranger-atac-GRCh38-1.2.0" \
 --normalize="none" \
 --nosecondary

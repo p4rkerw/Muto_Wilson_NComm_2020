@@ -1,0 +1,6 @@
+library_id,fragments,cells,peaks,group
+Control_1,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_1/outs/fragments.tsv.gz,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_1/outs/singlecell.csv,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_1/outs/peaks.bed,ctrl
+Control_2,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_2/outs/fragments.tsv.gz,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_2/outs/singlecell.csv,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_2/outs/peaks.bed,ctrl
+Control_3,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_3/outs/fragments.tsv.gz,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_3/outs/singlecell.csv,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_3/outs/peaks.bed,ctrl
+Control_4,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_4/outs/fragments.tsv.gz,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_4/outs/singlecell.csv,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_4/outs/peaks.bed,ctrl
+Control_5,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_5/outs/fragments.tsv.gz,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_5/outs/singlecell.csv,/mnt/g/diabneph/cellranger_atac_counts/version_1.2/Control_5/outs/peaks.bed,ctrl
