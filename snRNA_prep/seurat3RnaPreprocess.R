@@ -7,11 +7,15 @@ set.seed(1234)
 sessionInfo()
 here()
 
-outs <- "cellranger_rna_counts/version_3.1.0/cellranger_rna_aggr_control/outs/"
+outs <- "cellranger_rna_aggr_control/outs/"
 
 # load aggregated snRNAseq data from cellranger aggregate matrix and create seurat objects
 counts <- Read10X(here(outs,"filtered_feature_bc_matrix"))
 metadata <- read.csv(here(outs,"aggregation.csv"))
+
+# Not implemented: filter out barcodes identified by doubletfinder as doublets
+
+# create seurat object
 rnaAggr <- CreateSeuratObject(counts = counts, min.cells = 10, min.features = 500, project = "RNA")
 
 # extract GEM groups from individual barcodes using string split and the suffix integer
@@ -30,6 +34,9 @@ current.ids <- orig.ident
 new.ids <- metadata$group
 rnaAggr@meta.data$disease<-plyr::mapvalues(rnaAggr@meta.data$orig.ident,from = current.ids,to=new.ids)
 
+# visualize filtering parameters
+VlnPlot(rnaAggr, features = c("nCount_RNA","nFeature_RNA","percent.mt"))
+
 # Filtering low quality cells with high mitochondrial RNAs and ribosomal protein RNAs (known to be stable and thus enriched in cells compared to nuclei)
 rnaAggr <- subset(rnaAggr, 
                   subset = nFeature_RNA > 500 
@@ -43,7 +50,7 @@ rnaAggr <- subset(rnaAggr,
 # Regress out the mitochondrial reads and nCount_RNA
 rnaAggr <- SCTransform(rnaAggr, vars.to.regress = c("percent.mt","percent.rpl", "percent.rps","nCount_RNA"), verbose = TRUE)
 rnaAggr <- RunPCA(rnaAggr, verbose = TRUE)
-# ElbowPlot(rnaAggr, ndims = 40) # to determin number of dimensions for clustering
+# ElbowPlot(rnaAggr, ndims = 100) # to determin number of dimensions for clustering
 rnaAggr <- RunHarmony(rnaAggr, "orig.ident", plot_convergence = TRUE)
 rnaAggr <- FindNeighbors(rnaAggr, dims = 1:20, verbose = TRUE, reduction = "harmony")
 rnaAggr <- FindClusters(rnaAggr, verbose = TRUE, resolution = 0.6, reduction = "harmony")
@@ -76,9 +83,19 @@ new.cluster.ids <- c("PCT","DCT1","CNT","TAL","PCT","TAL","ICA","TAL","PC","PEC"
 names(new.cluster.ids) <- levels(rnaAggr)
 rnaAggr <- RenameIdents(rnaAggr, new.cluster.ids)
 
-# reorder the idents and save in celltype slot in metadata
+# reorder the idents and save celltype annotations in celltype slot metadata
 levels(rnaAggr) <- c("PCT","PT_KIM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB","PODO","ENDO","MES")
 rnaAggr@meta.data$celltype <- rnaAggr@active.ident
+
+# create low-resolution celltype identities for snATAC thresholding (ie group PT and PT-KIM1 and distal nephron together)
+lowres.cluster.ids <- c("PCT","PCT","PEC","TAL","DCT_CNT_PC","DCT_CNT_PC","DCT_CNT_PC","DCT_CNT_PC",
+                        "ICA","ICB","PODO","ENDO","MES")
+names(lowres.cluster.ids) <- levels(rnaAggr)
+rnaAggr <- RenameIdents(rnaAggr, lowres.cluster.ids)
+rnaAggr[["lowres.celltype"]] <- Idents(rnaAggr)
+
+# reset celltype as primary ident before saving and plotting
+Idents(rnaAggr) <- "celltype"
 
 # redraw umap and dotplot with reordered idents
 p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("Annotated Celltypes")

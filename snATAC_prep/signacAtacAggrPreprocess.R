@@ -14,7 +14,7 @@ set.seed(1234)
 
 
 # initialize output directories for aggregated and individual snATACseq data
-outs_atac <- "cellranger_atac_counts/version_1.2/cellranger_atac_aggr_control/outs"
+outs_atac <- "cellranger_atac_aggr_control/outs"
 prep_rna <- "cellranger_rna_prep"
 
 # load aggregated snATACseq data obtained from cellrangerAtacAggr.sh v1.2.0 and create a seurat object
@@ -110,7 +110,7 @@ genebody.coords <- keepStandardChromosomes(gene.coords, pruning.mode = 'coarse')
 genebodyandpromoter.coords <- Extend(x = gene.coords, upstream = 2000, downstream = 0)
 
 # Memory-intensive step:
-gene.activities <- FeatureMatrix(fragments = fragment.path, features = genebodyandpromoter.coords, cells = colnames(atacAggr), chunk = 10)
+gene.activities <- FeatureMatrix(fragments = here(outs_atac, "fragments.tsv.gz"), features = genebodyandpromoter.coords, cells = colnames(atacAggr), chunk = 10)
 gene.key <- genebodyandpromoter.coords$gene_name
 names(gene.key) <- GRangesToString(grange = genebodyandpromoter.coords)
 rownames(gene.activities) <- gene.key[rownames(gene.activities)]
@@ -124,7 +124,7 @@ atacAggr <- NormalizeData(
   scale.factor = median(atacAggr$nCount_RNA)
 )
 
-# saveRDS(atacAggr, file = "atacAggr.rds")
+# saveRDS(atacAggr, file = here("cellranger_atac_prep", "atacAggr_control.rds"))
 
 # -------------- START LABEL TRANSFER ---------------------
 # create an RNA assay based on gene activity scores, process, and embed with UMAP
@@ -140,7 +140,7 @@ atacAggr <- RunSVD(
 atacAggr  <- RunUMAP(object = atacAggr, reduction = "lsi", dims = 1:12)
 
 # load the corresponding aggregated snRNAseq object
-rnaAggr <- readRDS(here(prep_rna,"rnaAggr.rds"))
+rnaAggr <- readRDS(here(prep_rna,"rnaAggr_control.rds"))
 
 # identify anchors to transfer cell labels from snRNAseq to snATACseq "RNA" gene activity scores
 transfer.anchors <- FindTransferAnchors(
@@ -151,6 +151,8 @@ transfer.anchors <- FindTransferAnchors(
   reduction = 'cca',
 )
 
+# this is high-resolution celltype prediction which is great for predicting celltypes
+# but may is not best for thresholding snATAC data
 rnaAggr@active.ident -> rnaAggr@meta.data$celltype
 predicted.labels <- TransferData(
   anchorset = transfer.anchors,
@@ -160,13 +162,25 @@ predicted.labels <- TransferData(
 
 # add predicted cell types to the snATACseq object
 atacAggr <- AddMetaData(atacAggr, metadata = predicted.labels)
-atacAggr$predicted.id <- factor(atacAggr$predicted.id, levels = levels(rnaAggr))
+atacAggr$predicted.id <- factor(atacAggr$predicted.id, levels = levels(rnaAggr@meta.data$celltype))
+atacAggr$highres.predicted.id <- atacAggr$predicted.id # save the predicted celltype o/w predicted.id is overwritten
 
-p1 <- DimPlot(atacAggr, group.by = "predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq cells") + 
+# this is low-resolution celltype prediction which may be better for thresholding snATAC data
+lowres.predicted.labels <- TransferData(
+  anchorset = transfer.anchors,
+  refdata = rnaAggr$lowres.celltype,
+  weight.reduction = atacAggr[["lsi"]]
+)
+
+atacAggr <- AddMetaData(atacAggr, metadata = lowres.predicted.labels)
+atacAggr$lowres.predicted.id <- factor(atacAggr$predicted.id, levels = levels(rnaAggr@meta.data$lowres.celltype))
+
+
+p2 <- DimPlot(atacAggr, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq cells Before Harmony") + 
     NoLegend() + scale_colour_hue(drop = FALSE)
-p2 <- DimPlot(rnaAggr, group.by = "celltype", label = TRUE, repel = TRUE) + ggtitle("snRNA-seq cells") + 
+p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = TRUE) + ggtitle("snRNA-seq Annotated Celltypes") + 
     NoLegend()
-CombinePlots(plots = list(p1, p2))
+CombinePlots(plots = list(p2, p3))
 
 # perform batch effect correction with harmony
 atacAggr <- RunSVD(
@@ -179,12 +193,24 @@ atacAggr <- RunUMAP(object = atacAggr, reduction = 'harmony', dims = 1:33, assay
 atacAggr <- FindNeighbors(object = atacAggr, reduction = 'harmony', dims = 1:33, assay.use = "peaks")
 atacAggr <- FindClusters(object = atacAggr, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
 
-p1 <- DimPlot(atacAggr, group.by = "predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq cells") + 
+p4 <- DimPlot(atacAggr, group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony") + 
     NoLegend() + scale_colour_hue(drop = FALSE)
-p2 <- DimPlot(rnaAggr, label = TRUE, repel = TRUE) + ggtitle("snRNA-seq cells") + 
-    NoLegend()
-CombinePlots(plots = list(p1, p2))
+p5 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = TRUE) + ggtitle("snRNA-seq Annotated Celltypes") + 
+  NoLegend()
+CombinePlots(plots = list(p4, p5))
+
+# plot snATAC data with increasingly stringent predicted.id thresholds
+p6 <- hist(atacAggr@meta.data$prediction.score.max, main = "Prediction Score for snATAC")
+sub_atac <- subset(atacAggr, subset = prediction.score.max > 0.95)
+
+p7 <- DimPlot(sub_atac, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") + 
+  NoLegend() + scale_colour_hue(drop = FALSE)
+
+CombinePlots(plots = list(p4, p7))
+
+# remove doublet barcodes identified by doubletfinder and redo batch correction and clustering
 
 print("Saving integrated snRNAseq - snATACseq file to:")
-getwd()
-saveRDS(atacAggr, file = "atacAggr.rds")
+suppressWarnings(dir.create("cellranger_atac_prep"))
+here("cellranger_atac_prep")
+saveRDS(atacAggr, file = here("cellranger_atac_prep", "atacAggr_control.rds"))
