@@ -153,7 +153,6 @@ transfer.anchors <- FindTransferAnchors(
 
 # this is high-resolution celltype prediction which is great for predicting celltypes
 # but may is not best for thresholding snATAC data
-rnaAggr@active.ident -> rnaAggr@meta.data$celltype
 predicted.labels <- TransferData(
   anchorset = transfer.anchors,
   refdata = rnaAggr$celltype,
