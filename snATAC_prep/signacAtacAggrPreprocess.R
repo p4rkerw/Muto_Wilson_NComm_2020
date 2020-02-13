@@ -175,7 +175,7 @@ atacAggr <- AddMetaData(atacAggr, metadata = lowres.predicted.labels)
 atacAggr$lowres.predicted.id <- factor(atacAggr$predicted.id, levels = levels(rnaAggr@meta.data$lowres.celltype))
 
 
-p2 <- DimPlot(atacAggr, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq cells Before Harmony") + 
+p2 <- DimPlot(atacAggr, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes \n Before Harmony") + 
     NoLegend() + scale_colour_hue(drop = FALSE)
 p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = TRUE) + ggtitle("snRNA-seq Annotated Celltypes") + 
     NoLegend()
@@ -185,11 +185,11 @@ CombinePlots(plots = list(p2, p3))
 atacAggr <- RunSVD(
   object = atacAggr,
   assay = 'peaks',
-  reduction.key = 'pca_',
+  reduction.key = 'pca_', # this is actually an LSI reduction called "pca"
   reduction.name = 'pca')
 atacAggr <- RunHarmony(atacAggr, "orig.ident", plot_convergence = TRUE, assay.use = "peaks")
-atacAggr <- RunUMAP(object = atacAggr, reduction = 'harmony', dims = 1:33, assay.use = "peaks")
-atacAggr <- FindNeighbors(object = atacAggr, reduction = 'harmony', dims = 1:33, assay.use = "peaks")
+atacAggr <- RunUMAP(object = atacAggr, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
+atacAggr <- FindNeighbors(object = atacAggr, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
 atacAggr <- FindClusters(object = atacAggr, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
 
 p4 <- DimPlot(atacAggr, group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony") + 
@@ -205,11 +205,26 @@ sub_atac <- subset(atacAggr, subset = prediction.score.max > 0.95)
 p7 <- DimPlot(sub_atac, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
 
-CombinePlots(plots = list(p4, p7))
+p8 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") + 
+  NoLegend() + scale_colour_hue(drop = FALSE)
+
+CombinePlots(plots = list(p4, p8))
+
+dir.create("plots", showWarnings = FALSE)
+pdf(here("plots","umap.atacAggr.pdf"))
+p1
+p2
+p3
+p4
+p5
+p6
+p7
+p8
+dev.off()
 
 # remove doublet barcodes identified by doubletfinder and redo batch correction and clustering
 
 print("Saving integrated snRNAseq - snATACseq file to:")
 suppressWarnings(dir.create("cellranger_atac_prep"))
 here("cellranger_atac_prep")
-saveRDS(atacAggr, file = here("cellranger_atac_prep", "atacAggr_control.rds"))
+saveRDS(sub_atac, file = here("cellranger_atac_prep", "atacAggr_control.rds"))

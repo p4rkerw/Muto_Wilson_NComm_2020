@@ -1,11 +1,15 @@
-# this script will preprocess, filter, and annotate aggregated healthy kidney snRNAseq libraries
-library(Seurat) # 3.0.2
+# this script will eliminate doublets from an aggregated snRNA object prior to preprocessing
+library(Seurat) # 3.02
 library(ggplot2)
 library(harmony) # 1.0
-library(here) # set all filepaths relative to analysis directory of an R project eg. G:/diabneph
+library(Rcpp)
+library(DoubletFinder)
+library(openxlsx)
+library(here)
+library(dplyr)
+library(stringr)
+library(tibble)
 set.seed(1234)
-sessionInfo()
-here()
 
 outs <- "cellranger_rna_aggr_control/outs/"
 
@@ -13,11 +17,9 @@ outs <- "cellranger_rna_aggr_control/outs/"
 counts <- Read10X(here(outs,"filtered_feature_bc_matrix"))
 metadata <- read.csv(here(outs,"aggregation.csv"))
 
-# Not implemented: filter out barcodes identified by doubletfinder as doublets
-
-# create seurat object
-rnaAggr <- CreateSeuratObject(counts = counts, min.cells = 10, min.features = 500, project = "RNA")
-
+# load aggregated snRNAseq data from cellranger aggregate matrix and create seurat objects
+rnaAggr <- CreateSeuratObject(counts = counts, min.cells = 10, min.features = 500, 
+                              project = "RNA")
 # extract GEM groups from individual barcodes using string split and the suffix integer
 # use the GEM groups to assign sample origin (control vs. diabetes) from the aggregation.csv metadata
 # files were aggregated control 1, 2, 3, diabetes 1, 2, 3 are correspond to GEM groups 1-6
@@ -29,36 +31,103 @@ rnaAggr <- AddMetaData(object=rnaAggr, metadata=data.frame(orig.ident=sampleID, 
 rnaAggr <- PercentageFeatureSet(rnaAggr, pattern = "^MT-", col.name = "percent.mt")
 rnaAggr <- PercentageFeatureSet(rnaAggr, pattern = "^RPL", col.name = "percent.rpl")
 rnaAggr <- PercentageFeatureSet(rnaAggr, pattern = "^RPS", col.name = "percent.rps")
-# control vs diabetes
-current.ids <- orig.ident
-new.ids <- metadata$group
-rnaAggr@meta.data$disease<-plyr::mapvalues(rnaAggr@meta.data$orig.ident,from = current.ids,to=new.ids)
 
-# visualize filtering parameters
-# VlnPlot(rnaAggr, features = c("nCount_RNA","nFeature_RNA","percent.mt"), pt.size = 0.1)
+VlnPlot(object = rnaAggr, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3, group.by = "orig.ident",pt.size=0)
+VlnPlot(object = rnaAggr, features = c("percent.rps", "percent.rpl"), ncol = 2, group.by = "orig.ident",pt.size=0)
 
-# Filtering low quality cells with high mitochondrial RNAs and ribosomal protein RNAs (known to be stable and thus enriched in cells compared to nuclei)
-rnaAggr <- subset(rnaAggr, 
-                  subset = nFeature_RNA > 500 
+# filter the aggregated dataset for low quality cells
+rnaAggr <- subset(rnaAggr, subset = nFeature_RNA > 500 # use same filter params as aggr
                   & nFeature_RNA < 4000 
                   & nCount_RNA < 16000 
                   & percent.mt < 0.8 
                   & percent.rps < 0.4 
                   & percent.rpl < 0.4)
 
+# Doublet removal with the assumption that doublets represent 6% of cells.
+## Pre-process Seurat object (standard) --------------------------------------------------------------------------------------
+
+FindDoublets <- function(library_id, seurat_aggregate) {
+  rnaAggr <- seurat_aggregate
+  seurat_obj <- subset(rnaAggr, idents = library_id)
+  seurat_obj <- NormalizeData(seurat_obj)
+  seurat_obj <- ScaleData(seurat_obj)
+  seurat_obj <- FindVariableFeatures(seurat_obj, selection.method = "vst", nfeatures = 2000)
+  seurat_obj <- RunPCA(seurat_obj)
+  # ElbowPlot(seurat_obj)
+  seurat_obj <- FindNeighbors(seurat_obj, dims = 1:20)
+  seurat_obj <- RunUMAP(seurat_obj, dims = 1:20)
+  DimPlot(seurat_obj)
+
+  ## pK Identification (no ground-truth) ---------------------------------------------------------------------------------------
+  sweep.res.list_kidney <- paramSweep_v3(seurat_obj, PCs = 1:20, sct = F)
+  sweep.stats_kidney <- summarizeSweep(sweep.res.list_kidney, GT = FALSE)
+  bcmvn_kidney <- find.pK(sweep.stats_kidney)
+  pK <- bcmvn_kidney %>% # select the pK that corresponds to max bcmvn to optimize doublet detection
+    filter(BCmetric == max(BCmetric)) %>%
+    select(pK) 
+  pK <- as.numeric(as.character(pK[[1]]))
+  seurat_doublets <- doubletFinder_v3(seurat_obj, PCs = 1:20, pN = 0.25, pK = pK,
+                               nExp = round(0.05*length(seurat_obj@active.ident)), 
+                               reuse.pANN = FALSE, sct = F)
+ 
+  # create doublet groupings and visualize results
+  DF.class <- names(seurat_doublets@meta.data) %>% str_subset("DF.classifications")
+  pANN <- names(seurat_doublets@meta.data) %>% str_subset("pANN")
+  
+  p1 <- ggplot(bcmvn_kidney, aes(x=pK, y=BCmetric)) +
+    geom_bar(stat = "identity") + 
+    ggtitle(paste0("pKmax=",pK)) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  p2 <- DimPlot(seurat_doublets, group.by = DF.class)
+  p3 <- FeaturePlot(seurat_doublets, features = pANN)
+  
+  outFile <- paste0("doublets.",library_id,".pdf")
+  dir.create("plots", showWarnings = FALSE)
+  pdf(here("plots",outFile))
+    print(p1) # need to use print() when drawing pdf in a function call
+    print(p2)
+    print(p3)
+  dev.off()
+  
+  # create a df of barcodes and doublet designations
+  df_doublet_barcodes <- as.data.frame(cbind(rownames(seurat_doublets@meta.data), seurat_doublets@meta.data[[DF.class]]))
+  return(df_doublet_barcodes)
+}
+
+
+# take an aggregated snRNA seurat object and a list library_id and find doublets. return a df of doublet barcodes
+# send DimPlot and FeaturePlot of doublets for each library to here("plots")
+Idents(rnaAggr) <- "orig.ident"
+list.doublet.bc <- lapply(orig.ident, function(x) {FindDoublets(x, seurat_aggregate = rnaAggr)})
+doublet_id <- list.doublet.bc %>%
+  bind_rows() %>%
+  dplyr::rename("doublet_id" = "V2") %>%
+  tibble::column_to_rownames(var = "V1") # this is the barcode column
+table(doublet_id) # quantify total doublet vs. singlet calls (expect ~5% doublets)
+  
+# add doublet calls to aggregated snRNA object as doublet_id in meta.data slot
+rnaAggr <- AddMetaData(rnaAggr,doublet_id)
+# remove(doublet.meta_data)
+
+# filter out doublets prior to snRNA preprocessing
+Idents(rnaAggr) <- "doublet_id"
+rnaAggr <- subset(rnaAggr,idents = "Singlet")
+saveRDS(rnaAggr,here("cellranger_rna_prep","rnaAggr_control_nodoublets.rds"))
+
+
 # run sctransform
 # Regress out the mitochondrial reads and nCount_RNA
 rnaAggr <- SCTransform(rnaAggr, vars.to.regress = c("percent.mt","percent.rpl", "percent.rps","nCount_RNA"), verbose = TRUE)
 rnaAggr <- RunPCA(rnaAggr, verbose = TRUE)
-# ElbowPlot(rnaAggr, ndims = 50) # to determin number of dimensions for clustering
+# ElbowPlot(rnaAggr, ndims = 50) # to determine number of dimensions for clustering
 rnaAggr <- RunHarmony(rnaAggr, "orig.ident", plot_convergence = TRUE)
-rnaAggr <- FindNeighbors(rnaAggr, dims = 1:30, verbose = TRUE, reduction = "harmony")
+rnaAggr <- FindNeighbors(rnaAggr, dims = 1:24, verbose = TRUE, reduction = "harmony")
 rnaAggr <- FindClusters(rnaAggr, verbose = TRUE, resolution = 0.6, reduction = "harmony")
-rnaAggr <- RunUMAP(rnaAggr, dims = 1:30, verbose = TRUE, reduction = "harmony")
+rnaAggr <- RunUMAP(rnaAggr, dims = 1:24, verbose = TRUE, reduction = "harmony")
 
 # visualize the clustering
 # DimPlot(rnaAggr, reduction = "UMAP", assay = "SCT")
-p1 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("snRNA Original Clustering")
+p1 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("snRNA Seurat Clustering with Harmony No Doublets")
 
 celltype.markers <- c("CUBN","LRP2","HAVCR1","SLC5A1","SLC5A2", # PT and PT-KIM1+ markers
                       "CFH", # PEC
@@ -74,6 +143,7 @@ celltype.markers <- c("CUBN","LRP2","HAVCR1","SLC5A1","SLC5A2", # PT and PT-KIM1
                       "PECAM1","FLT1", # ENDO
                       "CLDN5", # GEC
                       "ITGA8","PDGFRB", # MES
+                      "CALD1", # FIB
                       "PTPRC") # WBC
 p2 <- DotPlot(rnaAggr, features = celltype.markers) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
@@ -115,4 +185,16 @@ print("Saving aggregated snRNAseq object as rnaAggr.rds in:")
 dir.create("cellranger_rna_prep", showWarnings = FALSE)
 here("cellranger_rna_prep")
 saveRDS(rnaAggr, file = here("cellranger_rna_prep","rnaAggr_control.rds"))
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
