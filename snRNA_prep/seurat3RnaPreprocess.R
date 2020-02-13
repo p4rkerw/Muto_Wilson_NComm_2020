@@ -181,6 +181,7 @@ p3
 p4
 dev.off()
 
+# save preprocessed rnAggr file
 print("Saving aggregated snRNAseq object as rnaAggr.rds in:")
 dir.create("cellranger_rna_prep", showWarnings = FALSE)
 here("cellranger_rna_prep")
