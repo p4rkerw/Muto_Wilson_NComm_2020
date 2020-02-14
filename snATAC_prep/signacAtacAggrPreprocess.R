@@ -205,10 +205,8 @@ sub_atac <- subset(atacAggr, subset = prediction.score.max > 0.95)
 
 p7 <- DimPlot(sub_atac, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
-
 p8 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
-
 CombinePlots(plots = list(p4, p8))
 
 # recluster after removing doublets
@@ -224,10 +222,8 @@ sub_atac <- FindClusters(object = sub_atac, verbose = FALSE, reduction = 'harmon
 
 p9 <- DimPlot(sub_atac, reduction ="umap", group.by = "seurat_clusters", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq After Harmony, 95% Threshold, and Recluster") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
-
 p10 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq After Harmony, 95% Threshold, and Recluster") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
-
 CombinePlots(list(p9, p10))
 
 dir.create("plots", showWarnings = FALSE)

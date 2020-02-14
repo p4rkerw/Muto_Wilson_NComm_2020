@@ -177,15 +177,12 @@ Idents(rnaAggr) <- "celltype"
 # redraw umap and dotplot with reordered idents
 p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("snRNA Annotated Celltypes")
 p4 <- DotPlot(rnaAggr, features = celltype.markers) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
 CombinePlots(list(p3,p4))
+
 # draw pdf plots for before and after annotation
 dir.create("plots", showWarnings = FALSE)
 pdf(here("plots","umap.rnaAggr.pdf"))
-p1
-p2
-p3
-p4
+list(p1,p2,p3,p4)
 dev.off()
 
 # save preprocessed rnAggr file
