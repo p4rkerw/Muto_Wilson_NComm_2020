@@ -121,15 +121,15 @@ rnaAggr <- SCTransform(rnaAggr, vars.to.regress = c("percent.mt","percent.rpl", 
 rnaAggr <- RunPCA(rnaAggr, verbose = TRUE)
 # ElbowPlot(rnaAggr, ndims = 50) # to determine number of dimensions for clustering
 rnaAggr <- RunHarmony(rnaAggr, "orig.ident", plot_convergence = TRUE)
-rnaAggr <- FindNeighbors(rnaAggr, dims = 1:23, verbose = TRUE, reduction = "harmony")
+rnaAggr <- FindNeighbors(rnaAggr, dims = 1:24, verbose = TRUE, reduction = "harmony")
 rnaAggr <- FindClusters(rnaAggr, verbose = TRUE, resolution = 0.7, reduction = "harmony")
-rnaAggr <- RunUMAP(rnaAggr, dims = 1:23, verbose = TRUE, reduction = "harmony")
+rnaAggr <- RunUMAP(rnaAggr, dims = 1:24, verbose = TRUE, reduction = "harmony")
 
 # visualize the clustering
 # DimPlot(rnaAggr, reduction = "UMAP", assay = "SCT")
 p1 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("snRNA Seurat Clustering with Harmony No Doublets")
 
-celltype.markers <- c("CUBN","LRP2","HAVCR1","SLC5A1","SLC5A2", # PT and PT-KIM1+ markers
+celltype.markers <- c("CUBN","HAVCR1","SLC5A1","SLC5A2", # PT and PT-KIM1+ markers
                       "CFH", # PEC
                       "SLC12A1", # TAL NKCC2
                       "SLC12A3","TRPM6", # DCT1 and DCT2 NCC
@@ -137,30 +137,34 @@ celltype.markers <- c("CUBN","LRP2","HAVCR1","SLC5A1","SLC5A2", # PT and PT-KIM1
                       "CALB1", # CNT
                       "AQP2", # PC
                       "ATP6V0D2", # ICA and ICB
-                      "SLC4A1", # ICA
+                      "SLC4A1","SLC26A7", # ICA
                       "SLC26A4", # ICB
                       "NPHS1","NPHS2", # PODO
-                      "PECAM1","FLT1", # ENDO
+                      "PECAM1","FLT1","EMCN", # ENDO
                       "CLDN5", # GEC
                       "ITGA8","PDGFRB", # MES
-                      "CALD1", # FIB
+                      "ACTA2","CALD1", # FIB
                       "PTPRC") # WBC
 p2 <- DotPlot(rnaAggr, features = celltype.markers) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 CombinePlots(plots = list(p1, p2))
 ########## Annotation of the clusters for data integration with snATAC dataset ##########
 rnaAggr[["orig.clusters"]] <- Idents(object = rnaAggr) # stash cluster idents prior to annotation
-new.cluster.ids <- c("PCT","TAL","DCT1","CNT","PCT","ICA","TAL","PC","PEC","ENDO","DCT2","PT_KIM1","PODO","MES","ICB","TAL","ENDO","ENDO","LEUK")
+new.cluster.ids <- c("PCT","DCT1","TAL","CNT","PCT",
+                     "TAL","ICA","TAL","PC","ENDO",
+                     "PEC","DCT2","PODO","PT_KIM1","ICB",
+                     "ENDO","MES","FIB","ENDO","LEUK")
 names(new.cluster.ids) <- levels(rnaAggr)
 rnaAggr <- RenameIdents(rnaAggr, new.cluster.ids)
 
 # reorder the idents and save celltype annotations in celltype slot metadata
-levels(rnaAggr) <- c("PCT","PT_KIM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB","PODO","ENDO","MES","LEUK")
+levels(rnaAggr) <- c("PCT","PT_KIM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB","PODO","ENDO","MES","FIB","LEUK")
 rnaAggr@meta.data$celltype <- rnaAggr@active.ident
 
 # create low-resolution celltype identities for snATAC thresholding (ie group PT and PT-KIM1 and distal nephron together)
-lowres.cluster.ids <- c("PCT","PCT","PEC","TAL","DCT_CNT_PC","DCT_CNT_PC","DCT_CNT_PC","DCT_CNT_PC",
-                        "ICA","ICB","PODO","ENDO","MES","LEUK")
+lowres.cluster.ids <- c("PCT","PCT","PEC","TAL","DCT_CNT_PC",
+                        "DCT_CNT_PC","DCT_CNT_PC","DCT_CNT_PC","ICA","ICB",
+                        "PODO","ENDO","MES_FIB","MES_FIB","LEUK")
 names(lowres.cluster.ids) <- levels(rnaAggr)
 rnaAggr <- RenameIdents(rnaAggr, lowres.cluster.ids)
 rnaAggr[["lowres.celltype"]] <- Idents(rnaAggr)
@@ -172,6 +176,7 @@ Idents(rnaAggr) <- "celltype"
 p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("snRNA Annotated Celltypes")
 p4 <- DotPlot(rnaAggr, features = celltype.markers) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+CombinePlots(list(p3,p4))
 # draw pdf plots for before and after annotation
 dir.create("plots", showWarnings = FALSE)
 pdf(here("plots","umap.rnaAggr.pdf"))
