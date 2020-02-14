@@ -158,7 +158,9 @@ names(new.cluster.ids) <- levels(rnaAggr)
 rnaAggr <- RenameIdents(rnaAggr, new.cluster.ids)
 
 # reorder the idents and save celltype annotations in celltype slot metadata
-levels(rnaAggr) <- c("PCT","PT_KIM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB","PODO","ENDO","MES","FIB","LEUK")
+levels(rnaAggr) <- c("PCT","PT_KIM1","PEC","TAL","DCT1",
+                     "DCT2","CNT","PC","ICA","ICB",
+                     "PODO","ENDO","MES","FIB","LEUK")
 rnaAggr@meta.data$celltype <- rnaAggr@active.ident
 
 # create low-resolution celltype identities for snATAC thresholding (ie group PT and PT-KIM1 and distal nephron together)

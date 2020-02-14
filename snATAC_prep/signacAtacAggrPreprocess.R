@@ -199,6 +199,7 @@ p5 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = 
 CombinePlots(plots = list(p4, p5))
 
 # plot snATAC data with increasingly stringent predicted.id thresholds
+# this should remove low-confidence cell type assignments that are enriched for doublets
 p6 <- hist(atacAggr@meta.data$prediction.score.max, main = "Prediction Score for snATAC")
 sub_atac <- subset(atacAggr, subset = prediction.score.max > 0.95)
 
@@ -210,21 +211,36 @@ p8 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", la
 
 CombinePlots(plots = list(p4, p8))
 
+# recluster after removing doublets
+sub_atac <- RunSVD(
+  object = sub_atac,
+  assay = 'peaks',
+  reduction.key = 'pca_', # this is actually an LSI reduction called "pca"
+  reduction.name = 'pca')
+sub_atac <- RunHarmony(sub_atac, "orig.ident", plot_convergence = TRUE, assay.use = "peaks")
+sub_atac <- RunUMAP(object = sub_atac, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
+sub_atac <- FindNeighbors(object = sub_atac, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
+sub_atac <- FindClusters(object = sub_atac, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
+
+p9 <- DimPlot(sub_atac, reduction ="umap", group.by = "seurat_clusters", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq After Harmony, 95% Threshold, and Recluster") + 
+  NoLegend() + scale_colour_hue(drop = FALSE)
+
+p10 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq After Harmony, 95% Threshold, and Recluster") + 
+  NoLegend() + scale_colour_hue(drop = FALSE)
+
+CombinePlots(list(p9, p10))
+
 dir.create("plots", showWarnings = FALSE)
 pdf(here("plots","umap.atacAggr.pdf"))
-p1
-p2
-p3
-p4
-p5
-p6
-p7
-p8
+list(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)
 dev.off()
 
-# remove doublet barcodes identified by doubletfinder and redo batch correction and clustering
-
+# save preprocessed atacAggr file
 print("Saving integrated snRNAseq - snATACseq file to:")
 suppressWarnings(dir.create("cellranger_atac_prep"))
 here("cellranger_atac_prep")
-saveRDS(sub_atac, file = here("cellranger_atac_prep", "atacAggr_control.rds"))
+saveRDS(sub_atac, file = here("cellranger_atac_prep", "atacAggr_sub95_control.rds"))
+saveRDS(atacAggr, file = here("cellranger_atac_prep", "atacAggr_control.rds"))
+
+
+
