@@ -152,7 +152,7 @@ transfer.anchors <- FindTransferAnchors(
 )
 
 # this is high-resolution celltype prediction which is great for predicting celltypes
-# but may is not best for thresholding snATAC data
+# but may not be useful for thresholding snATAC data
 predicted.labels <- TransferData(
   anchorset = transfer.anchors,
   refdata = rnaAggr$celltype,
@@ -181,7 +181,7 @@ p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = 
     NoLegend()
 CombinePlots(plots = list(p2, p3))
 
-# perform batch effect correction with harmony
+# perform batch effect correction with harmony and cluster prior to doublet removal
 atacAggr <- RunSVD(
   object = atacAggr,
   assay = 'peaks',
