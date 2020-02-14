@@ -121,9 +121,9 @@ rnaAggr <- SCTransform(rnaAggr, vars.to.regress = c("percent.mt","percent.rpl", 
 rnaAggr <- RunPCA(rnaAggr, verbose = TRUE)
 # ElbowPlot(rnaAggr, ndims = 50) # to determine number of dimensions for clustering
 rnaAggr <- RunHarmony(rnaAggr, "orig.ident", plot_convergence = TRUE)
-rnaAggr <- FindNeighbors(rnaAggr, dims = 1:24, verbose = TRUE, reduction = "harmony")
-rnaAggr <- FindClusters(rnaAggr, verbose = TRUE, resolution = 0.6, reduction = "harmony")
-rnaAggr <- RunUMAP(rnaAggr, dims = 1:24, verbose = TRUE, reduction = "harmony")
+rnaAggr <- FindNeighbors(rnaAggr, dims = 1:23, verbose = TRUE, reduction = "harmony")
+rnaAggr <- FindClusters(rnaAggr, verbose = TRUE, resolution = 0.7, reduction = "harmony")
+rnaAggr <- RunUMAP(rnaAggr, dims = 1:23, verbose = TRUE, reduction = "harmony")
 
 # visualize the clustering
 # DimPlot(rnaAggr, reduction = "UMAP", assay = "SCT")
