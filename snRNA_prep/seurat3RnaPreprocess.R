@@ -148,9 +148,9 @@ celltype.markers <- c("CUBN","HAVCR1","SLC5A1","SLC5A2", # PT and PT-KIM1+ marke
 p2 <- DotPlot(rnaAggr, features = celltype.markers) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 CombinePlots(plots = list(p1, p2))
-########## Annotation of the clusters for data integration with snATAC dataset ##########
+########## Annotation of the snRNA clusters for data integration with snATAC dataset ##########
 rnaAggr[["orig.clusters"]] <- Idents(object = rnaAggr) # stash cluster idents prior to annotation
-new.cluster.ids <- c("PCT","DCT1","TAL","CNT","PCT",
+new.cluster.ids <- c("PT","DCT1","TAL","CNT","PT",
                      "TAL","ICA","TAL","PC","ENDO",
                      "PEC","DCT2","PODO","PT_KIM1","ICB",
                      "ENDO","MES","FIB","ENDO","LEUK")
@@ -158,13 +158,13 @@ names(new.cluster.ids) <- levels(rnaAggr)
 rnaAggr <- RenameIdents(rnaAggr, new.cluster.ids)
 
 # reorder the idents and save celltype annotations in celltype slot metadata
-levels(rnaAggr) <- c("PCT","PT_KIM1","PEC","TAL","DCT1",
+levels(rnaAggr) <- c("PT","PT_KIM1","PEC","TAL","DCT1",
                      "DCT2","CNT","PC","ICA","ICB",
                      "PODO","ENDO","MES","FIB","LEUK")
 rnaAggr@meta.data$celltype <- rnaAggr@active.ident
 
 # create low-resolution celltype identities for snATAC thresholding (ie group PT and PT-KIM1 and distal nephron together)
-lowres.cluster.ids <- c("PCT","PCT","PEC","TAL","DCT_CNT_PC",
+lowres.cluster.ids <- c("PT","PT","PEC","TAL","DCT_CNT_PC",
                         "DCT_CNT_PC","DCT_CNT_PC","DCT_CNT_PC","ICA","ICB",
                         "PODO","ENDO","MES_FIB","MES_FIB","LEUK")
 names(lowres.cluster.ids) <- levels(rnaAggr)
