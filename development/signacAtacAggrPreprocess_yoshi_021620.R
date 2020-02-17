@@ -233,6 +233,22 @@ sub_atac <- RunUMAP(object = sub_atac, reduction = 'harmony', dims = 1:30, assay
 sub_atac <- FindNeighbors(object = sub_atac, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
 sub_atac <- FindClusters(object = sub_atac, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
 
+#clustering/gene activity-based cell-type annotation
+Idents(sub_atac) <- "seurat_clusters"
+new.cluster.ids <- c("PCT","TAL","PST","PCT","DCT",
+                     "TAL","TAL","PCT","PC","CNT",
+                     "ENDO","ICB","ICA","PT(KIM1+)","PEC",
+                     "DCT","MES-FIB","ENDO","PODO","LEUK")
+names(new.cluster.ids) <- levels(sub_atac)
+sub_atac <- RenameIdents(sub_atac, new.cluster.ids)
+sub_atac@meta.data$celltype <- sub_atac@active.ident
+# check gene activity whether they are consistent
+levels(sub_atac) <- rev(c("PCT","PST","PT(KIM1+)","PEC","TAL","DCT",
+                          "CNT","PC","ICA","ICB","PODO"
+                          ,"ENDO","MES-FIB","LEUK"))
+features <- c("SLC34A1","SLC5A2","SLC5A1","HAVCR1","CFH","SLC12A1","SLC12A3","SLC8A1","AQP2","SLC26A7","SLC26A4","NPHS2","EMCN","ACTA2","PTPRC")
+p0 <- DotPlot(sub_atac, features = rev(features),cols = c("lightyellow","royalblue")) + RotatedAxis() 
+
 p9 <- DimPlot(sub_atac, reduction ="umap", group.by = "seurat_clusters", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq After Harmony, 95% Threshold, and Recluster") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
 p10 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq After Harmony, 95% Threshold, and Recluster") + 

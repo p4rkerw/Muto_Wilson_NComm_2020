@@ -33,7 +33,7 @@ levels(rnaAggr) <- rev(c("PT","DR-PT","PEC","TAL","DCT1",
                          "PODO","ENDO","MES","FIB","LEUK"))
 
 features <- c("SLC34A1","HAVCR1","CFH","SLC12A1","SLC12A3","SLC8A1","AQP2","SLC26A7","SLC26A4","NPHS2","EMCN","PIEZO2","COL1A2","PTPRC")
-fig1b <- DotPlot(rnaAggr, features = rev(features),cols = c("lightyellow","royalblue")) + RotatedAxis() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+fig1b <- DotPlot(rnaAggr, features = rev(features),cols = c("lightyellow","royalblue")) + RotatedAxis()
 
 
 #snATAC-seq
@@ -75,8 +75,7 @@ levels(sub_atac) <- rev(c("PCT","PST","DR-PT","PEC","TAL","DCT",
                      "CNT","PC","ICA","ICB","PODO"
                      ,"ENDO","MES-FIB","LEUK"))
 features <- c("SLC34A1","SLC5A2","SLC5A1","HAVCR1","CFH","SLC12A1","SLC12A3","SLC8A1","AQP2","SLC26A7","SLC26A4","NPHS2","EMCN","ACTA2","PTPRC")
-fig1e <- DotPlot(sub_atac, features = rev(features),cols = c("lightyellow","royalblue")) + RotatedAxis() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
+fig1e <- DotPlot(sub_atac, features = rev(features),cols = c("lightyellow","royalblue")) + RotatedAxis() 
 
 
 rnaAggr@meta.data[["tech"]] <- "RNA"
@@ -84,6 +83,7 @@ atacAggr@meta.data[["tech"]] <- "ATAC"
 #hue_pal()(2) 
 #"#F8766D" "#00BFC4"
 Idents(rnaAggr) <- "tech"
+Idents(atacAggr) <- "tech"
 fig1c_1 <- DimPlot(rnaAggr,cols = "#00BFC4",reduction = "umap")+NoLegend()
 fig1c_2 <- DimPlot(atacAggr,cols = "#F8766D",reduction = "umap")+NoLegend()
 
