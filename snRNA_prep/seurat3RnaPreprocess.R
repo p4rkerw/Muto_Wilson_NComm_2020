@@ -107,13 +107,11 @@ table(doublet_id) # quantify total doublet vs. singlet calls (expect ~5% doublet
   
 # add doublet calls to aggregated snRNA object as doublet_id in meta.data slot
 rnaAggr <- AddMetaData(rnaAggr,doublet_id)
-# remove(doublet.meta_data)
 
 # filter out doublets prior to snRNA preprocessing
 Idents(rnaAggr) <- "doublet_id"
+saveRDS(rnaAggr,here("cellranger_rna_prep","rnaAggr_control_doubletid.rds"))
 rnaAggr <- subset(rnaAggr,idents = "Singlet")
-saveRDS(rnaAggr,here("cellranger_rna_prep","rnaAggr_control_nodoublets.rds"))
-
 
 # run sctransform
 # Regress out the mitochondrial reads and nCount_RNA
