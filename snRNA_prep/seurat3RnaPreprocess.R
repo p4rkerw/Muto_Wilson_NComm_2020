@@ -179,7 +179,7 @@ CombinePlots(list(p3,p4))
 
 # draw pdf plots for before and after annotation
 dir.create("plots", showWarnings = FALSE)
-pdf(here("plots","umap.rnaAggr.pdf"))
+pdf(here("plots","umap.rnaAggr.control.pdf"))
 list(p1,p2,p3,p4)
 dev.off()
 

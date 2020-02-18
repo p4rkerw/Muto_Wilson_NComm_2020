@@ -252,7 +252,7 @@ p11 <- DimPlot(sub_atac, reduction ="umap", group.by = "celltype", label = TRUE,
 
 # visualize clustering results with plotting
 dir.create("plots", showWarnings = FALSE)
-pdf(here("plots","umap.atacAggr.pdf"))
+pdf(here("plots","umap.atacAggr.control.pdf"))
 list(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11)
 dev.off()
 
