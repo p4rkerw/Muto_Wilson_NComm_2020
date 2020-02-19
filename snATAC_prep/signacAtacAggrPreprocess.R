@@ -123,7 +123,7 @@ atacAggr <- NormalizeData(
 # prior to label transfer. SCT assay is not supported for label transfer
 rnaAggr <- readRDS(here(prep_rna,"rnaAggr_control.rds"))
 rnaAggr <- NormalizeData(rnaAggr, assay = 'RNA')
-# Adding ScaleData will make errors in FindTransferAnchors since gene activities are not scaled 
+# Adding ScaleData will introduce errors in FindTransferAnchors since gene activities are not scaled 
 
 # identify anchors to transfer cell labels from snRNAseq to snATACseq "RNA" gene activity scores
 transfer.anchors <- FindTransferAnchors(
@@ -142,7 +142,7 @@ saveRDS(transfer.anchors, file = here("cellranger_atac_prep/transfer_anchors_con
 predicted.labels <- TransferData(
   anchorset = transfer.anchors,
   refdata = rnaAggr$celltype,
-  weight.reduction = atacAggr[["lsi"]]
+  weight.reduction = atacAggr[["pca"]] # this is actually an lsi reduction
 )
 
 # add predicted cell types to the snATACseq object
@@ -154,7 +154,7 @@ atacAggr$highres.predicted.id <- atacAggr$predicted.id # save the predicted cell
 lowres.predicted.labels <- TransferData(
   anchorset = transfer.anchors,
   refdata = rnaAggr$lowres.celltype,
-  weight.reduction = atacAggr[["lsi"]]
+  weight.reduction = atacAggr[["pca"]] # this is actually an lsi reduction
 )
 
 atacAggr <- AddMetaData(atacAggr, metadata = lowres.predicted.labels)
@@ -200,7 +200,7 @@ p8 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", la
   NoLegend() + scale_colour_hue(drop = FALSE)
 CombinePlots(plots = list(p4, p8))
 
-# recluster after removing doublets
+# renormalize and recluster after removing doublets
 DefaultAssay(sub_atac) <- "peaks"
 sub_atac <- RunTFIDF(sub_atac) #TF-IDF normalization again in the subset data.
 sub_atac <- FindTopFeatures(sub_atac, min.cutoff = 'q1')
