@@ -210,8 +210,8 @@ sub_atac <- RunSVD(
   reduction.key = 'pca_', # this is actually an LSI reduction called "pca"
   reduction.name = 'pca')
 sub_atac <- RunHarmony(sub_atac, "orig.ident", plot_convergence = TRUE, assay.use = "peaks")
-sub_atac <- RunUMAP(object = sub_atac, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
-sub_atac <- FindNeighbors(object = sub_atac, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
+sub_atac <- RunUMAP(object = sub_atac, reduction = 'harmony', dims = 1:29, assay.use = "peaks")
+sub_atac <- FindNeighbors(object = sub_atac, reduction = 'harmony', dims = 1:29, assay.use = "peaks")
 sub_atac <- FindClusters(object = sub_atac, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
 
 p9 <- DimPlot(sub_atac, reduction ="umap", group.by = "seurat_clusters", label = TRUE, repel = TRUE) +
@@ -225,14 +225,15 @@ CombinePlots(list(p9, p10))
 # perform cluster-based annotation with gene activities and save in "celltype" meta.data slot
 # snATAC cluster-based annotation can distinguish between PCT and PST
 Idents(sub_atac) <- "seurat_clusters"
-new.cluster.ids <- c("PCT","TAL","PST","PCT","TAL","DCT","TAL",
-                     "PST","PC","CNT","ENDO","PT_KIM1","ICA","ICB","DCT"
-                     ,"PEC","TAL","MES_FIB","LEUK","PODO")
+new.cluster.ids <- c("PCT","TAL","PST","PCT","TAL",
+                     "DCT","TAL","PST","PC","CNT",
+                     "ENDO","PT_KIM1","ICB","ICA","TAL",
+                     "DCT","PEC","MES_FIB","LEUK","PODO")
 
 names(new.cluster.ids) <- levels(sub_atac)
 sub_atac <- RenameIdents(sub_atac, new.cluster.ids)
-levels(sub_atac) <- c("PCT","PT_KIM1","PEC","TAL","DCT",
-                      "PST","CNT","PC","ICA","ICB",
+levels(sub_atac) <- c("PCT","PST","PT_KIM1","PEC","TAL",
+                      "DCT","CNT","PC","ICA","ICB",
                       "PODO","ENDO","MES_FIB","LEUK")
 sub_atac@meta.data$celltype <- sub_atac@active.ident
 
@@ -243,7 +244,7 @@ p11 <- DimPlot(sub_atac, reduction ="umap", group.by = "celltype", label = TRUE,
 # visualize clustering results with plotting
 dir.create("plots", showWarnings = FALSE)
 pdf(here("plots","umap.atacAggr.control.pdf"))
-list(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11)
+list(p1,p2,p3,p4,p5,p7,p8,p9,p10,p11)
 dev.off()
 
 # save preprocessed atacAggr file
