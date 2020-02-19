@@ -7,7 +7,7 @@ library(EnsDb.Hsapiens.v86)
 library(openxlsx)
 library(here)
 
-atacAggr <- readRDS(here("cellranger_atac_prep","atacAggr_sub95_control.rds"))
+atacAggr <- readRDS(here("cellranger_atac_prep","atacAggr_sub97_control.rds"))
 Idents(atacAggr) <- "celltype"
 DefaultAssay(atacAggr) <- 'peaks'
 
@@ -32,47 +32,47 @@ dir.create(here("analysis_control"), showWarnings = FALSE)
 write.xlsx(list.cluster.dar, file = here("analysis_control","dar.celltype.control.xlsx"), sheetName = idents, rowNames = T)
 
 
-###### PARALLELIZED VERSION #######
-library(parallel)
-library(doSNOW)
-
-# detect the number of available cores, assign clusters, and register with doSNOW package
-detectCores()
-no.cluster <- 2
-cl <- makeCluster(no.cluster)
-registerDoSNOW(cl)
-
-clusterExport(cl, list = c("atacAggr"))
-
-# perform in parallel with no.cluster defining the number of jobs to run
-# default is to combine all the results as a list
-idents <- Idents(atacAggr) 
-list.cluster.dar <- foreach(i = 1:length(idents)) %dopar% {
-  library(Signac)
-  library(Seurat)
-  library(EnsDb.Hsapiens.v86)
-  dar <- GetMarkers(idents[i], atacAggr)
-  return(dar)
-}
-
-# stop clusters
-stopCluster(cl)
-
-# write to directory
-dir.create(here("analysis_control"), showWarnings = FALSE)
-write.xlsx(list.cluster.dar, file = here("analysis_control","dar.celltype.control.xlsx"), sheetName = idents, rowNames = T)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# ###### PARALLELIZED VERSION #######
+# library(parallel)
+# library(doSNOW)
+# 
+# # detect the number of available cores, assign clusters, and register with doSNOW package
+# detectCores()
+# no.cluster <- 2
+# cl <- makeCluster(no.cluster)
+# registerDoSNOW(cl)
+# 
+# clusterExport(cl, list = c("atacAggr"))
+# 
+# # perform in parallel with no.cluster defining the number of jobs to run
+# # default is to combine all the results as a list
+# idents <- Idents(atacAggr) 
+# list.cluster.dar <- foreach(i = 1:length(idents)) %dopar% {
+#   library(Signac)
+#   library(Seurat)
+#   library(EnsDb.Hsapiens.v86)
+#   dar <- GetMarkers(idents[i], atacAggr)
+#   return(dar)
+# }
+# 
+# # stop clusters
+# stopCluster(cl)
+# 
+# # write to directory
+# dir.create(here("analysis_control"), showWarnings = FALSE)
+# write.xlsx(list.cluster.dar, file = here("analysis_control","dar.celltype.control.xlsx"), sheetName = idents, rowNames = T)
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 

@@ -27,7 +27,7 @@ fig1b <- DotPlot(rnaAggr, features = rev(features), cols = c("lightyellow","roya
 
 
 #snATAC-seq
-sub_atac <- readRDS("cellranger_atac_prep/atacAggr_sub95_control.rds")
+sub_atac <- readRDS("cellranger_atac_prep/atacAggr_sub97_control.rds")
 atacAggr <- readRDS("cellranger_atac_prep/atacAggr_control.rds")
 
 Idents(sub_atac) <- "highres.predicted.id"

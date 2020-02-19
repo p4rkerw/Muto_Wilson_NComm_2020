@@ -225,10 +225,10 @@ CombinePlots(list(p9, p10))
 # perform cluster-based annotation with gene activities and save in "celltype" meta.data slot
 # snATAC cluster-based annotation can distinguish between PCT and PST
 Idents(sub_atac) <- "seurat_clusters"
-new.cluster.ids <- c("PCT","TAL","PST","PCT","TAL",
+new.cluster.ids <- c("PCT","PST","TAL","PCT","TAL",
                      "DCT","TAL","PST","PC","CNT",
                      "ENDO","PT_KIM1","ICB","ICA","TAL",
-                     "DCT","PEC","MES_FIB","LEUK","PODO")
+                     "PEC","DCT","MES_FIB","LEUK","PODO")
 
 names(new.cluster.ids) <- levels(sub_atac)
 sub_atac <- RenameIdents(sub_atac, new.cluster.ids)
@@ -237,7 +237,7 @@ levels(sub_atac) <- c("PCT","PST","PT_KIM1","PEC","TAL",
                       "PODO","ENDO","MES_FIB","LEUK")
 sub_atac@meta.data$celltype <- sub_atac@active.ident
 
-p11 <- DimPlot(sub_atac, reduction ="umap", group.by = "celltype", label = TRUE, repel = TRUE) +
+p11 <- DimPlot(sub_atac, reduction ="umap", group.by = "celltype", label = TRUE) +
   ggtitle("snATAC-seq Annotated Celltypes After Harmony, 97% Threshold, and Recluster") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
 
