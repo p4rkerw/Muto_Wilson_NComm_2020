@@ -35,30 +35,8 @@ sampleID <- plyr::mapvalues(gemgroup, from = current.gemgroups, to = orig.ident)
 atacAggr <- AddMetaData(object=atacAggr, metadata=data.frame(orig.ident=sampleID, 
   row.names=rownames(atacAggr@meta.data)))
 
-# # Create an additional metadata grouping for control vs diabetes in meta.data$disease
-# disease.groups <- aggcsv$group # control vs. diabetes
-# groupID <-plyr::mapvalues(atacAggr@meta.data$orig.ident,
-#   from = orig.ident,to=disease.groups)
-# levels(groupID) <- levels(disease.groups)
-# atacAggr <- AddMetaData(atacAggr, metadata=data.frame(disease=groupID,
-#     row.names=rownames(atacAggr@meta.data)))
-
-
 # calculating nucleosome signal
 atacAggr <- NucleosomeSignal(object = atacAggr)
-
-# create granges object with TSS positions
-gene.ranges <- genes(EnsDb.Hsapiens.v86)
-gene.ranges <- gene.ranges[gene.ranges$gene_biotype == 'protein_coding', ]
-tss.ranges <- GRanges(
-  seqnames = seqnames(gene.ranges),
-  ranges = IRanges(start = start(gene.ranges), width = 2),
-  strand = strand(gene.ranges)
-)
-seqlevelsStyle(tss.ranges) <- 'UCSC'
-tss.ranges <- keepStandardChromosomes(tss.ranges, pruning.mode = 'coarse')
-# Use the first 2000 TSSs
-atacAggr <- TSSEnrichment(object = atacAggr, tss.positions = tss.ranges[1:2000])
 
 # Add the metadata for mitochondrial fragments from individual snATACseq counts into the aggregated dataset 
 # Collect total fragment number data from each of the original CellRangerATAC datasets.
@@ -88,7 +66,7 @@ atacAggr$nucleosome_group <- ifelse(atacAggr$nucleosome_signal > 10, 'NS > 10', 
 
 # filter the aggregated snATACseq object using empirically-determined QC parameters
 atacAggr <- subset(atacAggr, subset = peak_region_fragments > 2500 & peak_region_fragments < 25000 &
- pct_reads_in_peaks > 15 & blacklist_ratio < 0.001 & nucleosome_signal < 4 & mito_ratio < 0.25 & TSS.enrichment > 0.5)
+ pct_reads_in_peaks > 15 & blacklist_ratio < 0.001 & nucleosome_signal < 4 & mito_ratio < 0.25)
 
 # perform normalization and dimensional reduction of aggregated snATACseq object
 # call the singular value decomposition reduction "PCA" so harmony can recognize it
@@ -141,19 +119,29 @@ atacAggr <- NormalizeData(
 
 # -------------- START LABEL TRANSFER ---------------------
 # create an RNA assay based on gene activity scores, process, and embed with UMAP
-DefaultAssay(atacAggr) <- 'RNA'
-atacAggr <- RunTFIDF(atacAggr)
-atacAggr <- FindTopFeatures(atacAggr, min.cutoff = 'q1')
-atacAggr <- RunSVD(
+#DefaultAssay(atacAggr) <- 'RNA'
+#atacAggr <- RunTFIDF(atacAggr)
+#atacAggr <- FindTopFeatures(atacAggr, min.cutoff = 'q1')
+#atacAggr <- RunSVD(
+#object = atacAggr,
+#assay = 'peaks',
+#reduction.key = 'LSI_',
+#reduction.name = 'lsi'
+#)
+#atacAggr  <- RunUMAP(object = atacAggr, reduction = "lsi", dims = 1:12)
+atacAggr <- NormalizeData(
   object = atacAggr,
-  assay = 'peaks',
-  reduction.key = 'LSI_',
-  reduction.name = 'lsi'
+  assay = 'RNA',
+  normalization.method = 'LogNormalize',
+  scale.factor = median(atacAggr$nCount_RNA)
 )
-atacAggr  <- RunUMAP(object = atacAggr, reduction = "lsi", dims = 1:12)
 
-# load the corresponding aggregated snRNAseq object
-rnaAggr <- readRDS(here(prep_rna,"rnaAggr_control.rds"))
+
+# load the corresponding aggregated snRNAseq object and normalize the RNA assay
+# prior to label transfer. SCT assay is not supported for label transfer
+rnaAggr <- readRDS("cellranger_rna_prep/rnaAggr_control.rds")
+rnaAggr <- NormalizeData(rnaAggr, assay = 'RNA')
+#rnaAggr <- ScaleData(rnaAggr, assay = 'RNA') # DO NOT SCALE or FindTransferAnchor does not work
 
 # identify anchors to transfer cell labels from snRNAseq to snATACseq "RNA" gene activity scores
 transfer.anchors <- FindTransferAnchors(
@@ -163,6 +151,9 @@ transfer.anchors <- FindTransferAnchors(
   query.assay = 'RNA',
   reduction = 'cca',
 )
+
+# save transfer anchors for plotting coembedded snRNA and snATAC
+saveRDS(transfer.anchors, file = here("cellranger_atac_prep/transfer_anchors_control.rds"))
 
 # this is high-resolution celltype prediction which is great for predicting celltypes
 # but may not be useful for thresholding snATAC data
@@ -187,10 +178,11 @@ lowres.predicted.labels <- TransferData(
 atacAggr <- AddMetaData(atacAggr, metadata = lowres.predicted.labels)
 atacAggr$lowres.predicted.id <- factor(atacAggr$predicted.id, levels = levels(rnaAggr@meta.data$lowres.celltype))
 
-
-p2 <- DimPlot(atacAggr, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes \n Before Harmony") + 
+p2 <- DimPlot(atacAggr, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) +
+    ggtitle("snATAC-seq Predicted Celltypes \n Before Harmony") + 
     NoLegend() + scale_colour_hue(drop = FALSE)
-p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = TRUE) + ggtitle("snRNA-seq Annotated Celltypes") + 
+p3 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = TRUE) +
+    ggtitle("snRNA-seq Annotated Celltypes") + 
     NoLegend()
 CombinePlots(plots = list(p2, p3))
 
@@ -205,24 +197,31 @@ atacAggr <- RunUMAP(object = atacAggr, reduction = 'harmony', dims = 1:30, assay
 atacAggr <- FindNeighbors(object = atacAggr, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
 atacAggr <- FindClusters(object = atacAggr, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
 
-p4 <- DimPlot(atacAggr, group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony") + 
+p4 <- DimPlot(atacAggr, group.by = "highres.predicted.id", label = TRUE, repel = TRUE) +
+    ggtitle("snATAC-seq Predicted Celltypes After Harmony") + 
     NoLegend() + scale_colour_hue(drop = FALSE)
-p5 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = TRUE) + ggtitle("snRNA-seq Annotated Celltypes") + 
-  NoLegend()
+p5 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE, repel = TRUE) +
+    ggtitle("snRNA-seq Annotated Celltypes") + 
+    NoLegend()
 CombinePlots(plots = list(p4, p5))
 
 # plot snATAC data with increasingly stringent predicted.id thresholds
 # this should remove low-confidence cell type assignments that are enriched for doublets
 p6 <- hist(atacAggr@meta.data$prediction.score.max, main = "Prediction Score for snATAC")
-sub_atac <- subset(atacAggr, subset = prediction.score.max > 0.95)
+sub_atac <- subset(atacAggr, subset = prediction.score.max > 0.97)
 
-p7 <- DimPlot(sub_atac, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") + 
+p7 <- DimPlot(sub_atac, group.by = "lowres.predicted.id", label = TRUE, repel = TRUE) +
+  ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") +
   NoLegend() + scale_colour_hue(drop = FALSE)
-p8 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") + 
+p8 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) +
+  ggtitle("snATAC-seq Predicted Celltypes After Harmony \n and 95% Prediction Threshold Using \n Low-res Celltypes") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
 CombinePlots(plots = list(p4, p8))
 
 # recluster after removing doublets
+DefaultAssay(sub_atac) <- "peaks"
+sub_atac <- RunTFIDF(sub_atac)
+sub_atac <- FindTopFeatures(sub_atac, min.cutoff = 'q1')
 sub_atac <- RunSVD(
   object = sub_atac,
   assay = 'peaks',
@@ -233,37 +232,41 @@ sub_atac <- RunUMAP(object = sub_atac, reduction = 'harmony', dims = 1:30, assay
 sub_atac <- FindNeighbors(object = sub_atac, reduction = 'harmony', dims = 1:30, assay.use = "peaks")
 sub_atac <- FindClusters(object = sub_atac, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
 
-#clustering/gene activity-based cell-type annotation
-Idents(sub_atac) <- "seurat_clusters"
-new.cluster.ids <- c("PCT","TAL","PST","PCT","DCT",
-                     "TAL","TAL","PCT","PC","CNT",
-                     "ENDO","ICB","ICA","PT(KIM1+)","PEC",
-                     "DCT","MES-FIB","ENDO","PODO","LEUK")
-names(new.cluster.ids) <- levels(sub_atac)
-sub_atac <- RenameIdents(sub_atac, new.cluster.ids)
-sub_atac@meta.data$celltype <- sub_atac@active.ident
-# check gene activity whether they are consistent
-levels(sub_atac) <- rev(c("PCT","PST","PT(KIM1+)","PEC","TAL","DCT",
-                          "CNT","PC","ICA","ICB","PODO"
-                          ,"ENDO","MES-FIB","LEUK"))
-features <- c("SLC34A1","SLC5A2","SLC5A1","HAVCR1","CFH","SLC12A1","SLC12A3","SLC8A1","AQP2","SLC26A7","SLC26A4","NPHS2","EMCN","ACTA2","PTPRC")
-p0 <- DotPlot(sub_atac, features = rev(features),cols = c("lightyellow","royalblue")) + RotatedAxis() 
-
-p9 <- DimPlot(sub_atac, reduction ="umap", group.by = "seurat_clusters", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq After Harmony, 95% Threshold, and Recluster") + 
+p9 <- DimPlot(sub_atac, reduction ="umap", group.by = "seurat_clusters", label = TRUE, repel = TRUE) +
+  ggtitle("snATAC-seq Seurat Clusters After Harmony, 95% Threshold, and Recluster") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
-p10 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) + ggtitle("snATAC-seq After Harmony, 95% Threshold, and Recluster") + 
+p10 <- DimPlot(sub_atac, reduction ="umap", group.by = "highres.predicted.id", label = TRUE, repel = TRUE) +
+  ggtitle("snATAC-seq Predicted Celltypes After Harmony, 95% Threshold, and Recluster") + 
   NoLegend() + scale_colour_hue(drop = FALSE)
 CombinePlots(list(p9, p10))
 
+# perform cluster-based annotation with gene activities and save in "celltype" meta.data slot
+# snATAC cluster-based annotation can distinguish between PCT and PST
+Idents(sub_atac) <- "seurat_clusters"
+new.cluster.ids <- c("PCT","TAL","PST","PCT","TAL","DCT","TAL",
+                     "PST","PC","CNT","ENDO","PT_KIM1","ICA","ICB","DCT"
+                     ,"PEC","TAL","MES_FIB","LEUK","PODO")
+
+names(new.cluster.ids) <- levels(sub_atac)
+sub_atac <- RenameIdents(sub_atac, new.cluster.ids)
+levels(sub_atac) <- c("PCT","PT_KIM1","PEC","TAL","DCT",
+                      "PST","CNT","PC","ICA","ICB",
+                      "PODO","ENDO","MES_FIB","LEUK")
+sub_atac@meta.data$celltype <- sub_atac@active.ident
+
+p11 <- DimPlot(sub_atac, reduction ="umap", group.by = "celltype", label = TRUE, repel = TRUE) +
+  ggtitle("snATAC-seq Annotated Celltypes After Harmony, 95% Threshold, and Recluster") + 
+  NoLegend() + scale_colour_hue(drop = FALSE)
+
+# visualize clustering results with plotting
 dir.create("plots", showWarnings = FALSE)
-pdf(here("plots","umap.atacAggr.pdf"))
-list(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10)
+pdf(here("plots","umap.atacAggr.control.pdf"))
+list(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11)
 dev.off()
 
 # save preprocessed atacAggr file
 print("Saving integrated snRNAseq - snATACseq file to:")
 suppressWarnings(dir.create("cellranger_atac_prep"))
-here("cellranger_atac_prep")
 saveRDS(sub_atac, file = here("cellranger_atac_prep", "atacAggr_sub95_control.rds"))
 saveRDS(atacAggr, file = here("cellranger_atac_prep", "atacAggr_control.rds"))
 
