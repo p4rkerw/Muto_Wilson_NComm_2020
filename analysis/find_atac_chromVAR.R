@@ -70,7 +70,7 @@ GetMotifs <- function(cluster, seurat_aggregate) {
   return(enriched.motifs)
 }
 
-GetChromvarActivities <- function(cluster, seurat_aggregate) {
+GetChromvarActivities <- function(cluster, seurat_aggregate, motif) {
   print(paste0("Finding chromVAR activities for: ",cluster))
   atacAggr <- seurat_aggregate
   DefaultAssay(atacAggr) <- 'chromvar'
@@ -80,15 +80,15 @@ GetChromvarActivities <- function(cluster, seurat_aggregate) {
                      latent.vars = "nCount_peaks",
                      logfc.threshold = 0) # find all cluster-specific degs
   motifLookup <- rownames(dam)
-  pwm <- atacAggr@assays$peaks@misc$motif@pwm # load embedded positional weight matrix for TF binding
-  motifNames <- sapply(motifLookup, function(x) pwm@listData[[x]]@name)
+  motifNames <- sapply(motifLookup, function(x) motif@motif.names[[x]])
   return(cbind(dam, gene = motifNames))
 }
 
 # FindMarkers and write to an xlsx file with default parameters
 Idents(atacAggr) <- "celltype"
-list.cluster.dac <- lapply(idents, function(x) GetMotifs(x, seurat_aggregate = atacAggr)))
+idents <- levels(atacAggr)
+list.cluster.dac <- lapply(idents, function(x) GetMotifs(x, seurat_aggregate = atacAggr))
 write.xlsx(list.cluster.dac, file = "analysis_control/motifs.celltype.xlsx", sheetName = idents, rowNames = T)
 
-list.cluster.dam <- lapply(idents, function(x) GetChromvarActivities(x, seurat_aggregate = atacAggr)))
+list.cluster.dam <- lapply(idents, function(x) GetChromvarActivities(x, seurat_aggregate = atacAggr, motif = motif))
 write.xlsx(list.cluster.dam, file = "analysis_control/chromVAR.celltype.xlsx", sheetName = idents, rowNames = T)
