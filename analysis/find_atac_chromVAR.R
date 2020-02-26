@@ -88,7 +88,7 @@ GetChromvarActivities <- function(cluster, seurat_aggregate, motif) {
 Idents(atacAggr) <- "celltype"
 idents <- levels(atacAggr)
 list.cluster.dac <- lapply(idents, function(x) GetMotifs(x, seurat_aggregate = atacAggr))
-write.xlsx(list.cluster.dac, file = "analysis_control/motifs.celltype.xlsx", sheetName = idents, rowNames = T)
+write.xlsx(list.cluster.dac, file = "analysis_control/motifs.celltype.control.xlsx", sheetName = idents, rowNames = T)
 
 list.cluster.dam <- lapply(idents, function(x) GetChromvarActivities(x, seurat_aggregate = atacAggr, motif = motif))
-write.xlsx(list.cluster.dam, file = "analysis_control/chromVAR.celltype.xlsx", sheetName = idents, rowNames = T)
+write.xlsx(list.cluster.dam, file = "analysis_control/chromVAR.celltype.control.xlsx", sheetName = idents, rowNames = T)
