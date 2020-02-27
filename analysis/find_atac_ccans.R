@@ -1,12 +1,10 @@
-# this script will generate cis-coaccessibility networks for individual
-# celltypes. 
+# this script will generate cis-coaccessibility networks for individual celltypes. 
 library(Signac) # 0.1.5
 library(Seurat) # 3.0.2
 library(cicero) # 1.2
 library(dplyr)
 library(here)
-
-
+library(openxlsx)
 
 # input Seurat object
 PrepareCiceroCDS <- function(seurat_obj) {
@@ -77,38 +75,37 @@ FindCiceroConns <- function(cds, chrom = NULL) {
   return(conns)
 }
 
-# load aggregated snATACseq dataset and select cluster of interest
-atacAggr <- readRDS("cellranger_atac_prep/atacAggr_sub97_control.rds")
-clusterID <- "PODO"
-
-# subset the snATACseq object by disease state within celltype of interest
-Idents(atacAggr) <- "celltype"
-
 Get_Ccans <- function(clusterID, seurat_agg) {
   print(paste0("Calculating CCAN for: ",clusterID))
   atacAggr <- seurat_agg
   seuratSub <- subset(atacAggr, ident = clusterID) # create a subset
-
+  
   # convert seurat objects into cicero cell datasets in preparation for detecting cicero connections
   ciceroCds <- PrepareCiceroCDS(seuratSub)
-
+  
   # generate disease-specific CCANS for all chromsomes of a particular celltype
   # FindCiceroConns can also take specific seqLevels eg.
   # seqLevels <- paste0("chr",c(21,22))
   # FindCiceroConns(cds, seqLevels)
-  conns1 <- FindCiceroConns(ciceroCds)
-  return(conn1)
+  conns <- FindCiceroConns(ciceroCds)
+  return(conns)
 }
 
+
+####################################################################
+# load aggregated snATACseq dataset and select cluster of interest
+atacAggr <- readRDS("cellranger_atac_prep/atacAggr_sub97_control.rds")
+
+# subset the snATACseq object by disease state within celltype of interest and find ccans
+Idents(atacAggr) <- "celltype"
 list.ccan <- lapply(levels(atacAggr), function(ident) {Get_Ccans(ident, seurat_agg = atacAggr)})
 
 # write to file
 dir.create("analysis_control/ccans", showWarnings = FALSE)
-outFile1 <- paste0("analysis_control/ccans/ciceroConns.control.",clusterID,".csv")
-write.csv(conns1, file = outFile1, row.names = F)
-
-
-
+names(list.ccan) <- levels(atacAggr)
+lapply(names(list.ccan), function(x) {
+  write.csv(list.ccan[[x]], file = paste0("analysis_control/ccans/ciceroConns.control.",x,".csv", row.names = T))
+})
 
 
 
