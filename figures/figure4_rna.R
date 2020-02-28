@@ -57,16 +57,13 @@ cds_subset <- cds_subset[,colData(cds_subset)$celltype %in% c("PT","PT_KIM1")]
 cds_subset <- cluster_cells(cds_subset)
 cds_subset <- learn_graph(cds_subset,close_loop = FALSE)
 cds_subset <- order_cells(cds_subset)
-fig4c_1 <- plot_cells(cds_subset,
+fig4c <- plot_cells(cds_subset,
            color_cells_by = "pseudotime",
            label_groups_by_cluster=FALSE,
            label_leaves=FALSE,
            label_branch_points=FALSE,
            show_trajectory_graph=T) #png 560x430
-fig4c_2 <-  plot_cells(cds_subset,
-           genes="HAVCR1",cell_size = 1,
-           label_cell_groups=FALSE,
-           show_trajectory_graph=FALSE)
+
 
 genes <- c("VCAM1","TPM1","SLC5A12","SLC4A4")
 lineage_cds <- cds_subset[rowData(cds_subset)$gene_short_name %in% genes,]
@@ -97,3 +94,18 @@ fig4d_2 <- plot_genes_in_pseudotime(lineage_cds,
                                   trend_formula = "~ splines::ns(pseudotime, df=10)",
                                   panel_order = c("SLC5A12","SLC4A4")
 ) #png 500x670
+
+figS4a <- FeaturePlot(rnaAggr,features = c("VCAM1","TPM1","SLC5A12","SLC4A4"),order=T)
+figS4b_1 <-  plot_cells(cds_subset,
+                       genes="VCAM1",cell_size = 1,
+                       label_cell_groups=FALSE,
+                       show_trajectory_graph=FALSE)
+figS4b_2 <-  plot_cells(cds_subset,
+                        genes="TPM1",cell_size = 1,
+                        label_cell_groups=FALSE,
+                        show_trajectory_graph=FALSE)
+
+
+
+
+
