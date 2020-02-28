@@ -104,7 +104,7 @@ list.ccan <- lapply(levels(atacAggr), function(ident) {Get_Ccans(ident, seurat_a
 dir.create("analysis_control/ccans", showWarnings = FALSE)
 names(list.ccan) <- levels(atacAggr)
 lapply(names(list.ccan), function(x) {
-  write.csv(list.ccan[[x]], file = paste0("analysis_control/ccans/ciceroConns.control.",x,".csv", row.names = T))
+  write.csv(list.ccan[[x]], file = paste0("analysis_control/ccans/ciceroConns.control.",x,".csv", row.names = TRUE))
 })
 
 
