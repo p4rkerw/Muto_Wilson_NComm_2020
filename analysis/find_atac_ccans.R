@@ -1,5 +1,5 @@
 # this script will generate cis-coaccessibility networks for individual celltypes. 
-library(Signac) # 0.1.5
+library(Signac) # 0.2.1
 library(Seurat) # 3.0.2
 library(cicero) # 1.2
 library(dplyr)
