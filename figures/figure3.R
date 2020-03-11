@@ -8,24 +8,40 @@ library(EnsDb.Hsapiens.v86)
 library(BuenColors)
 set.seed(1234)
 library(openxlsx)
+library(matrixStats)
 
 #snRNA-seq data
 rnaAggr <- readRDS("cellranger_rna_prep/rnaAggr_control.rds")
 
 #Use the object with all version of jasper motifs
-sub_atac <- readRDS("cellranger_atac_prep/atacAggr_sub97_control.rds")
+sub_atac <- readRDS("cellranger_atac_prep/chromVar.atacAggr_sub97_control.rds")
 
-marker <- FindAllMarkers(sub_atac, only.pos = T,assay = "chromvar")
-marker_set <- tfmarker$gene[!duplicated(tfmarker$gene)]
-aver_chromvar <- AverageExpression(sub_atac,assays = "chromvar",features = marker_set)
-fig3a <- pheatmap::pheatmap(aver_chromvar[["chromvar"]],scale = "row",
+# find cell type specific TF and make a unique list
+tf_celltype.df <- FindAllMarkers(sub_atac, only.pos = T, assay = "chromvar")
+unique_tf.list <- unique(tf_celltype.df$gene)
+aver_chromvar <- AverageExpression(sub_atac, assays = "chromvar", features = unique_tf.list) %>%
+  as.data.frame()
+
+# sort the heatmap prior to plotting find column index for maxium value for each TF activity
+aver_chromvar <- aver_chromvar[do.call(order, c(aver_chromvar, list(decreasing=TRUE))),]
+aver_chromvar$max <- max.col(aver_chromvar)
+aver_chromvar <- aver_chromvar[order(aver_chromvar$max), ]
+aver_chromvar <- dplyr::select(aver_chromvar, -max)
+colnames(aver_chromvar) <- idents
+
+# visualize results
+fig3a <- pheatmap::pheatmap(aver_chromvar,scale = "row",
                             cluster_cols=F,cluster_rows = F,
                             color = jdb_palette("brewer_yes"),
                             show_rownames=F)
 
+# HNF4A does not appear to be in the pwm for JASPAR2018
 DefaultAssay(sub_atac) <- "chromvar"
 fig3b_1 <- FeaturePlot(sub_atac,features = "HNF4A",cols =jdb_palette("brewer_yes"))
 fig3b_2 <- FeaturePlot(sub_atac,features = "TFAP2B",cols =jdb_palette("brewer_yes"))
+
+fig3b_1 <- FeaturePlot(sub_atac,features = "MA0114.3",cols =jdb_palette("brewer_yes"))
+fig3b_2 <- FeaturePlot(sub_atac,features = "MA0811.1",cols =jdb_palette("brewer_yes"))
 
 DefaultAssay(sub_atac) <- "RNA"
 fig3b_3 <- FeaturePlot(sub_atac,features = "HNF4A",cols =jdb_palette("Zissou"))

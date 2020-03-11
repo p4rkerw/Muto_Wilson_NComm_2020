@@ -252,7 +252,7 @@ EncodeTfbsTrack <- function(dacOverlap, name, clusterID = NULL, filter = FALSE) 
 }
 
 gene = "VCAM1"
-clusterID <- "PT"
+clusterID <- "PCT"
 seqlevels <- c(seq(1,24),"X","Y")
 extend <- 100000 # extend region beyond gene body up- and downstream
 downsample <- 100 # reduce number of points to plot for histograms of atac coverage
