@@ -62,5 +62,5 @@ x <- c(x,pwm@listData[[i]]@name)
 }
 rownames(sub_atac@assays[["chromvar"]]@data) <- x
 
-
+saveRDS(sub_atac, file = here("cellranger_atac_prep", "atacAggr_sub97_control.rds"))
 
