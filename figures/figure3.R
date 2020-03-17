@@ -40,8 +40,9 @@ DefaultAssay(sub_atac) <- "chromvar"
 fig3b_1 <- FeaturePlot(sub_atac,features = "HNF4A",cols =jdb_palette("brewer_yes"))
 fig3b_2 <- FeaturePlot(sub_atac,features = "TFAP2B",cols =jdb_palette("brewer_yes"))
 
-fig3b_1 <- FeaturePlot(sub_atac,features = "MA0114.3",cols =jdb_palette("brewer_yes"))
-fig3b_2 <- FeaturePlot(sub_atac,features = "MA0811.1",cols =jdb_palette("brewer_yes"))
+# HNF1B and TFAP2B
+fig3b_1 <- FeaturePlot(sub_atac,features = "MA0153.2",cols =jdb_palette("brewer_yes")) + ggtitle("HNF1B")
+fig3b_2 <- FeaturePlot(sub_atac,features = "MA0811.1",cols =jdb_palette("brewer_yes")) + ggtitle("TFAP2B")
 
 DefaultAssay(sub_atac) <- "RNA"
 fig3b_3 <- FeaturePlot(sub_atac,features = "HNF4A",cols =jdb_palette("Zissou"))
