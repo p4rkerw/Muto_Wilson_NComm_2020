@@ -47,7 +47,7 @@ txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
 library(clusterProfiler)
 library(org.Hs.eg.db)
 
-# conver the DAR to GRanges objects to annotate
+# convert the DAR to GRanges objects to annotate
 all_dar.gr <- StringToGRanges(all_dar$coord, sep = c(":","-"))
 list.dar.gr <- lapply(seq(list.dar), function(x) {
   df <- list.dar[[x]]

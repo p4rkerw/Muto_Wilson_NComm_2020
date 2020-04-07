@@ -119,6 +119,11 @@ list.overlap <- lapply(list.clusterID, function(clusterID) {
 }) 
 
 write.xlsx(list.overlap, file = "analysis_control/atac_overlap_ccans_geneHancer.xlsx", sheetName = list.clusterID)
+# list.clusterID <- getSheetNames("analysis_control/atac_overlap_ccans_geneHancer.xlsx")
+# list.overlap <- lapply(list.clusterID, function(sheetName) {
+#   read.xlsx("analysis_control/atac_overlap_ccans_geneHancer.xlsx",
+#   sheet= sheetName)
+#   })
 
 prop.overlap.df <-  lapply(seq(list.overlap), function(x) {
   df <- dplyr::select(list.overlap[[x]], "prop_cicero_in_gh_de")
@@ -130,7 +135,8 @@ rownames(prop.overlap.df) <- list(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)
 # plot the results by transposing the dataframe so coaccess threshold are the columns 
 boxplot(t(prop.overlap.df),
         xlab="Cicero Coaccess Threshold",
-        ylab="Mean Proportion of Cicero Connections in GeneHancer")
+        ylab="Mean Proportion of Cicero Connections in GeneHancer",
+        col="red")
 
 prop.overlap.df <-  lapply(seq(list.overlap), function(x) {
   df <- dplyr::select(list.overlap[[x]], "prop_cicero_in_gh_all")
@@ -142,4 +148,5 @@ rownames(prop.overlap.df) <- list(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)
 # plot the results by transposing the dataframe so coaccess threshold are the columns 
 boxplot(t(prop.overlap.df),
         xlab="Cicero Coaccess Threshold",
-        ylab="Mean Proportion of Cicero Connections in GeneHancer")
+        ylab="Mean Proportion of Cicero Connections in GeneHancer",
+        col="red")
