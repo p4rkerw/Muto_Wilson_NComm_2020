@@ -115,7 +115,7 @@ motifmatrix <- motifmatrix[c("REL","RELA","FOS::JUN","HNF4A","HNF1A","PPARA::RXR
 
 fig4g <- pheatmap::pheatmap(motifmatrix,cluster_cols = F,cluster_rows = F,scale = "column",border_color = "NA",show_colnames=F)
 
-sub_atac <- SetFragments(object = sub_atac, file = "cellranger_atac_aggr_control/outs/fragments.tsv.gz")
+sub_atac <- SetFragments(object = sub_atac, file = "outs_atac/fragments.tsv.gz")
 
 figS4c_1 <- CoveragePlot(
   object = sub_atac,

@@ -23,7 +23,7 @@ cds <- preprocess_cds(cds, num_dim = 100)
 cds = align_cds(cds, num_dim = 100, alignment_group = "orig.ident")
 cds = reduce_dimension(cds,preprocess_method = "Aligned")
 fig4a <- plot_cells(cds, color_cells_by="celltype", 
-           group_label_size = 3)
+           group_label_size = 0) #png: 570x540
 cds_subset <- choose_cells(cds) #subseting PT for later analysis: before adding pseudotime
 
 #whole dataset
@@ -69,11 +69,12 @@ genes <- c("VCAM1","TPM1","SLC5A12","SLC4A4")
 lineage_cds <- cds_subset[rowData(cds_subset)$gene_short_name %in% genes,]
 fig4d <- plot_genes_in_pseudotime(lineage_cds,
                          color_cells_by="celltype",
+                         ncol=2,
                          min_expr=1,
                          cell_size=0.1,
                          trend_formula = "~ splines::ns(pseudotime, df=10)",
                          panel_order = c("VCAM1","TPM1","SLC5A12","SLC4A4")
-                         ) #png 500x670
+                         ) #png 850x540
 
 genes <- c("VCAM1","TPM1")
 lineage_cds <- cds_subset[rowData(cds_subset)$gene_short_name %in% genes,]

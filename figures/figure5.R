@@ -32,13 +32,13 @@ names(new.cluster.ids) <- levels(tal)
 tal <- RenameIdents(tal, new.cluster.ids)
 tal@meta.data$subtype <- tal@active.ident
 
-Fig5a <- DimPlot(tal, reduction = "umap", label = TRUE, pt.size = 1) + NoLegend()
+Fig5a <- DimPlot(tal, reduction = "umap", pt.size = 1) + NoLegend() #610x575
 
 levels(tal) <- rev(new.cluster.ids)
-features <- c("SLC12A1","UMOD","PHACTR1","CLDN10-AS1","CLDN10","CLDN16","JAG1","WNK1","CASR","S100A2","TMPRSS4","S100A6","GADD45B","CRYAB","AKR1B1")
-Fig5b <- DotPlot(tal, features = rev(features)) + RotatedAxis()
+features <- c("SLC12A1","UMOD","CLDN10-AS1","CALCR","CLDN10","CLDN16","CASR","WNK1","JAG1","S100A2","TMPRSS4","S100A6","GADD45B","CRYAB","AKR1B1")
+Fig5b <- DotPlot(tal, features = rev(features)) + RotatedAxis()#792x575
 
-Fig5c <- FeaturePlot(tal,features = c("CLDN10","JAG1","CLDN16","NOTCH2"),order=T)
+Fig5c <- FeaturePlot(tal,features = c("CLDN10","CLDN16","CALCR","CASR"),order=T)  #680x575
 
 #==================ATAC-seq=========================================
 library(Signac)
@@ -46,17 +46,9 @@ library(GenomeInfoDb)
 library(ggplot2)
 library(EnsDb.Hsapiens.v86)
 
-sub_atac <- readRDS("cellranger_atac_prep/sub_atac_sub97_control_allT.rds")
+sub_atac <- readRDS("cellranger_atac_prep/atacAggr_sub97_control_allT.rds")
 tal_atac <- subset(sub_atac, ident = "TAL")
 DefaultAssay(tal_atac) <- "peaks"
-
-#tal_atac <- RunTFIDF(tal_atac)
-#tal_atac <- FindTopFeatures(tal_atac, min.cutoff = 'q1')
-#tal_atac <- RunSVD(
-  #object = tal_atac,
-  #assay = 'peaks',
-  #reduction.key = 'pca_',
-  #reduction.name = 'pca')
 
 #tal_atac  <- RunHarmony(tal_atac ,"orig.ident",assay.use = "peaks")
 tal_atac   <- RunUMAP(object = tal_atac , reduction = 'harmony', dims = 1:33)
@@ -69,70 +61,47 @@ names(new.cluster.ids) <- levels(tal_atac)
 tal_atac <- RenameIdents(tal_atac, new.cluster.ids)
 tal_atac@meta.data$subtype <- tal_atac@active.ident
 
-fig5e <- DimPlot(tal_atac,label = T)+NoLegend()
+fig5e <- DimPlot(tal_atac, pt.size = 1)+NoLegend()  #610x575
 
-fig5f <- FeaturePlot(tal_atac,features = c("CLDN10","JAG1","CLDN16","NOTCH2"),order=T,cols =jdb_palette("Zissou"))
-
-DimPlot(tal_atac,label=T)
 DefaultAssay(tal_atac) <- "RNA"
+fig5f <- FeaturePlot(tal_atac,features = c("CLDN10","CLDN16","CALCR","CASR"),order=T,cols =jdb_palette("Zissou"))
 
-library(BSgenome.Hsapiens.UCSC.hg38)
-library(JASPAR2018)
-library(TFBSTools)
-library(chromVAR)
-set.seed(1234)
+levels(tal_atac) <- rev(levels(tal_atac))
+features <- c("SLC12A1","UMOD","CLDN10-AS1","CALCR","CLDN10","CLDN16","CASR","WNK1","JAG1","S100A2","TMPRSS4","S100A6","GADD45B","CRYAB","AKR1B1")
+fig.5g <- DotPlot(tal_atac, features = rev(features)) + RotatedAxis()#792x575
 
-DefaultAssay(tal_atac) <- "peaks"
+#Motif enrichment analysis on chromvar between TAL1 vs TAL2
+DefaultAssay(tal_atac) <- "chromvar"
+enriched.motifs_activities <- FindMarkers(tal_atac,ident.1 = "TAL1",ident.2 = "TAL2")
 
-pwm <- getMatrixSet(
-  x = JASPAR2018,
-  opts = list(species = 9606, all_versions = T)
-)
+library(ggpubr)
+#Visualization
+enriched.motifs_activities$motif <- rownames(enriched.motifs_activities)
+enriched.motifs_activities$logp <- -log10(enriched.motifs_activities$p_val_adj)
+fig.5h <- ggbarplot(head(enriched.motifs_activities), x = "motif", y = "logp",
+                    orientation = "horizontal",order=rev(enriched.motifs_activities$motif),
+                    fill = "motif", palette = c("#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f","#5ad40c","#fb6f6f")) #551x575
 
-# Scan the DNA sequence of each peak for the presence of each motif
-motif.matrix <- CreateMotifMatrix(
-  features = StringToGRanges(rownames(tal_atac), sep = c(":", "-")),
-  pwm = pwm,
-  genome = 'BSgenome.Hsapiens.UCSC.hg38',
-  sep = c(":", "-")
-)
+#Motif enrichment analysis on the dac between TAL1 vs TAL2
+DefaultAssay(tal_atac) <- 'peaks'
 
-# Create a new Mofif object to store the results
-motif <- CreateMotifObject(
-  data = motif.matrix,
-  pwm = pwm
-)
+#Background should be the accessible regions detected at least 2.5% of total TAL population 
+background.use <- rownames(tal_atac)[(1-rowSums(tal_atac@assays[["peaks"]]@data==0)/length(colnames(tal_atac)) > 0.025)]
+dac <- FindMarkers(tal_atac, ident.1 = "TAL1",ident.2 = "TAL2", test.use = 'LR', latent.vars = "nCount_peaks")
 
-# Add the Motif object to the assay
-tal_atac[['peaks']] <- AddMotifObject(
-  object = tal_atac[['peaks']],
-  motif.object = motif
-)
+enriched.motifs_TAL1 <- FindMotifs(object = tal_atac, features = rownames(dac[dac$avg_logFC > 0, ]),background = background.use)
+enriched.motifs_TAL2 <- FindMotifs(object = tal_atac, features = rownames(dac[dac$avg_logFC < 0, ]),background = background.use)
 
-tal_atac <- RegionStats(
-  object = tal_atac,
-  genome = BSgenome.Hsapiens.UCSC.hg38,
-  sep = c(":", "-")
-)
+#Visualization
+enriched.motifs_TAL1$logp <- -log10(enriched.motifs_TAL1$pvalue)
+enriched.motifs_TAL2$logp <- -log10(enriched.motifs_TAL2$pvalue)
 
-# compute motif activities using chromvar
-tal_atac <- RunChromVAR(
-  object = tal_atac,
-  genome = BSgenome.Hsapiens.UCSC.hg38,
-  motif.matrix = motif.matrix
-)
+fig.5i <- ggbarplot(head(enriched.motifs_TAL1), x = "motif.name", y = "logp",
+                    orientation = "horizontal",order=rev(head(enriched.motifs_TAL1)$motif.name),
+                    fill = "motif.name", palette = c("#5ad40c","#5ad40c","#5ad40c","#5ad40c","#5ad40c","#5ad40c")) #551x575
 
-DefaultAssay(tal_atac) <- 'chromvar'
+fig.5j <- ggbarplot(head(enriched.motifs_TAL2), x = "motif.name", y = "logp",
+                    orientation = "horizontal",order=rev(head(enriched.motifs_TAL2)$motif.name),
+                    fill = "motif.name", palette = c("#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f")) #551x575
 
-# Feature name conversion from motifID to TF gene name
-x <- NULL                        
-for (i in rownames(tal_atac@assays[["chromvar"]]@data)) { 
-  x <- c(x,pwm@listData[[i]]@name)
-}
-rownames(tal_atac@assays[["chromvar"]]@data) <- x
-
-
-motifidlist <- rownames(tal_atac@assays[["chromvar"]]@data)
-
-fig6h <- VlnPlot(sub_atac,features = c("RBPJ"),pt.size = 0,ncol=1)+NoLegend()
 
