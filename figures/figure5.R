@@ -36,9 +36,9 @@ Fig5a <- DimPlot(tal, reduction = "umap", pt.size = 1) + NoLegend() #610x575
 
 levels(tal) <- rev(new.cluster.ids)
 features <- c("SLC12A1","UMOD","CLDN10-AS1","CALCR","CLDN10","CLDN16","CASR","WNK1","JAG1","S100A2","TMPRSS4","S100A6","GADD45B","CRYAB","AKR1B1")
-Fig5b <- DotPlot(tal, features = rev(features)) + RotatedAxis()#792x575
+Fig5b_1 <- DotPlot(tal, features = rev(features)) + RotatedAxis()#792x575
 
-Fig5c <- FeaturePlot(tal,features = c("CLDN10","CLDN16","S100A2","UMOD"),order=T)  #680x575
+Fig5b_2 <- FeaturePlot(tal,features = c("CLDN10","CLDN16","S100A2","UMOD"),order=T)  #680x575
 
 #==================ATAC-seq=========================================
 library(Signac)
@@ -64,11 +64,11 @@ tal_atac@meta.data$subtype <- tal_atac@active.ident
 fig5e <- DimPlot(tal_atac, pt.size = 1)+NoLegend()  #610x575
 
 DefaultAssay(tal_atac) <- "RNA"
-fig5f <- FeaturePlot(tal_atac,features = c("CLDN10","CLDN16","S100A2","UMOD"),cols =jdb_palette("Zissou"))
+fig5f_1 <- FeaturePlot(tal_atac,features = c("CLDN10","CLDN16","S100A2","UMOD"),cols =jdb_palette("Zissou"))
 
 levels(tal_atac) <- rev(levels(tal_atac))
 features <- c("SLC12A1","UMOD","CLDN10-AS1","CALCR","CLDN10","CLDN16","CASR","WNK1","JAG1","S100A2","TMPRSS4","S100A6","GADD45B","CRYAB","AKR1B1")
-fig.5g <- DotPlot(tal_atac, features = rev(features)) + RotatedAxis()#792x575
+fig.5f_2 <- DotPlot(tal_atac, features = rev(features)) + RotatedAxis()#792x575
 
 #Motif enrichment analysis on chromvar between TAL1 vs TAL2
 DefaultAssay(tal_atac) <- "chromvar"
@@ -78,7 +78,7 @@ library(ggpubr)
 #Visualization
 enriched.motifs_activities$motif <- rownames(enriched.motifs_activities)
 enriched.motifs_activities$logp <- -log10(enriched.motifs_activities$p_val_adj)
-fig.5h <- ggbarplot(head(enriched.motifs_activities), x = "motif", y = "logp",
+fig.5g <- ggbarplot(head(enriched.motifs_activities), x = "motif", y = "logp",
                     orientation = "horizontal",order=rev(enriched.motifs_activities$motif),
                     fill = "motif", palette = c("#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f","#5ad40c","#fb6f6f")) #551x575
 
@@ -96,11 +96,11 @@ enriched.motifs_TAL2 <- FindMotifs(object = tal_atac, features = rownames(dac[da
 enriched.motifs_TAL1$logp <- -log10(enriched.motifs_TAL1$pvalue)
 enriched.motifs_TAL2$logp <- -log10(enriched.motifs_TAL2$pvalue)
 
-fig.5i <- ggbarplot(head(enriched.motifs_TAL1), x = "motif.name", y = "logp",
+fig.5h_1 <- ggbarplot(head(enriched.motifs_TAL1), x = "motif.name", y = "logp",
                     orientation = "horizontal",order=rev(head(enriched.motifs_TAL1)$motif.name),
                     fill = "motif.name", palette = c("#5ad40c","#5ad40c","#5ad40c","#5ad40c","#5ad40c","#5ad40c")) #551x575
 
-fig.5j <- ggbarplot(head(enriched.motifs_TAL2), x = "motif.name", y = "logp",
+fig.5h_2 <- ggbarplot(head(enriched.motifs_TAL2), x = "motif.name", y = "logp",
                     orientation = "horizontal",order=rev(head(enriched.motifs_TAL2)$motif.name),
                     fill = "motif.name", palette = c("#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f")) #551x575
 

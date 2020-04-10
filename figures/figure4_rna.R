@@ -22,42 +22,16 @@ cds <- new_cell_data_set(as(count_data, "sparseMatrix"),
 cds <- preprocess_cds(cds, num_dim = 100)
 cds = align_cds(cds, num_dim = 100, alignment_group = "orig.ident")
 cds = reduce_dimension(cds,preprocess_method = "Aligned")
-fig4a <- plot_cells(cds, color_cells_by="celltype", 
+fig4a_1 <- plot_cells(cds, color_cells_by="celltype", 
            group_label_size = 0) #png: 570x540
-cds_subset <- choose_cells(cds) #subseting PT for later analysis: before adding pseudotime
-
-#whole dataset
-cds <- cluster_cells(cds)
-cds <- learn_graph(cds)
-plot_cells(cds,
-           color_cells_by = "celltype",
-           label_groups_by_cluster=FALSE,
-           label_leaves=FALSE,
-           label_branch_points=FALSE)
-
-cds <- order_cells(cds)
-
-fig4b <-   plot_cells(cds,
-           color_cells_by = "pseudotime",
-           label_groups_by_cluster=FALSE,
-           label_leaves=FALSE,
-           label_branch_points=FALSE,
-           label_roots=FALSE) #png 560x430
-
-plot_cells(cds_subset,
-           color_cells_by = "celltype",
-           label_groups_by_cluster=FALSE,
-           label_leaves=FALSE,
-           label_branch_points=FALSE,label_cell_groups=T,show_trajectory_graph=F,group_label_size=3.6) #png 460x430
 
 #subclustering
-
-cds_subset <- choose_cells(cds)
+cds_subset <- choose_cells(cds) #subseting PT for later analysis: before adding pseudotime
 cds_subset <- cds_subset[,colData(cds_subset)$celltype %in% c("PT","PT_KIM1")]
 cds_subset <- cluster_cells(cds_subset)
 cds_subset <- learn_graph(cds_subset,close_loop = FALSE)
 cds_subset <- order_cells(cds_subset)
-fig4c <- plot_cells(cds_subset,
+fig4a_2 <- plot_cells(cds_subset,
            color_cells_by = "pseudotime",
            label_groups_by_cluster=FALSE,
            label_leaves=FALSE,
@@ -67,18 +41,10 @@ fig4c <- plot_cells(cds_subset,
 
 genes <- c("VCAM1","TPM1","SLC5A12","SLC4A4")
 lineage_cds <- cds_subset[rowData(cds_subset)$gene_short_name %in% genes,]
-fig4d <- plot_genes_in_pseudotime(lineage_cds,
-                         color_cells_by="celltype",
-                         ncol=2,
-                         min_expr=1,
-                         cell_size=0.1,
-                         trend_formula = "~ splines::ns(pseudotime, df=10)",
-                         panel_order = c("VCAM1","TPM1","SLC5A12","SLC4A4")
-                         ) #png 850x540
 
 genes <- c("VCAM1","TPM1")
 lineage_cds <- cds_subset[rowData(cds_subset)$gene_short_name %in% genes,]
-fig4d_1 <- plot_genes_in_pseudotime(lineage_cds,
+fig4b_1 <- plot_genes_in_pseudotime(lineage_cds,
                                   color_cells_by="celltype",
                                   min_expr=1,
                                   cell_size=0.1,
@@ -88,7 +54,7 @@ fig4d_1 <- plot_genes_in_pseudotime(lineage_cds,
 
 genes <- c("SLC5A12","SLC4A4")
 lineage_cds <- cds_subset[rowData(cds_subset)$gene_short_name %in% genes,]
-fig4d_2 <- plot_genes_in_pseudotime(lineage_cds,
+fig4b_2 <- plot_genes_in_pseudotime(lineage_cds,
                                   color_cells_by="celltype",
                                   min_expr=1,
                                   cell_size=0.1,
@@ -96,17 +62,4 @@ fig4d_2 <- plot_genes_in_pseudotime(lineage_cds,
                                   panel_order = c("SLC5A12","SLC4A4")
 ) #png 500x670
 
-figS4a <- FeaturePlot(rnaAggr,features = c("VCAM1","TPM1","SLC5A12","SLC4A4"),order=T)
-figS4b_1 <-  plot_cells(cds_subset,
-                       genes="VCAM1",cell_size = 1,
-                       label_cell_groups=FALSE,
-                       show_trajectory_graph=FALSE)
-figS4b_2 <-  plot_cells(cds_subset,
-                        genes="TPM1",cell_size = 1,
-                        label_cell_groups=FALSE,
-                        show_trajectory_graph=FALSE)
-
-
-
-
-
+figS10 <- FeaturePlot(rnaAggr,features = c("VCAM1","TPM1","SLC5A12","SLC4A4"),order=T)

@@ -43,20 +43,13 @@ input_cds <- cluster_cells(input_cds)
 input_cds <- learn_graph(input_cds)
 input_cds <- order_cells(input_cds) #Choose the three most distant point from PT_KIM1 in PCT and PST for "start points" of the trajectories. 
 
-figS4e_1 <-   plot_cells(input_cds,
+fig4c_1 <-   plot_cells(input_cds,
                         color_cells_by = "celltype",
                         label_groups_by_cluster=FALSE,
                         label_leaves=FALSE,
                         label_branch_points=FALSE,
                         label_roots=FALSE,
                         label_cell_groups=F,show_trajectory_graph=F,group_label_size=3.6) #png 560x430
-
-figS4e_2 <-   plot_cells(input_cds,
-                        color_cells_by = "pseudotime",
-                        label_groups_by_cluster=FALSE,
-                        label_leaves=FALSE,
-                        label_branch_points=FALSE,
-                        label_roots=FALSE) #png 560x430
 
 
 cds_subset <- input_cds[,colData(input_cds)$celltype %in% c("PCT","PST","PT_KIM1")] #Subsetting PT and PT_KIM1 clusters 
@@ -66,15 +59,7 @@ cds_subset <- cluster_cells(cds_subset)
 cds_subset <- learn_graph(cds_subset)
 cds_subset <- order_cells(cds_subset) #Choose the most distant point from PT_KIM1
 
-fig4e_1 <-   plot_cells(cds_subset,
-                        color_cells_by = "celltype",
-                        label_groups_by_cluster=FALSE,
-                        label_leaves=FALSE,
-                        label_branch_points=FALSE,
-                        label_roots=FALSE,
-                        label_cell_groups=F,show_trajectory_graph=F,group_label_size=3.6) #png 560x430
-
-fig4e_2 <-   plot_cells(cds_subset,
+fig4c_2 <-   plot_cells(cds_subset,
                       color_cells_by = "pseudotime",
                       label_groups_by_cluster=FALSE,
                       label_leaves=FALSE,
@@ -88,8 +73,8 @@ fig4e_2 <-   plot_cells(cds_subset,
 #markers <- cbind(markers, gene=cf$gene_name, distance=cf$distance)
 
 cds_subset_lin <- cds_subset[,is.finite(pseudotime(cds_subset))]
-fig4f_1 <- plot_accessibility_in_pseudotime(cds_subset_lin[c("chr1:100719411-100719996","chr15:63040511-63045764"),],breaks = 8) #VCAM1/TPM1
-fig4f_2 <- plot_accessibility_in_pseudotime(cds_subset_lin[c("chr11:26714753-26720418","chr4:71338336-71340367"),],breaks = 8) #SLC5A12/SLC4A4
+fig4d_1 <- plot_accessibility_in_pseudotime(cds_subset_lin[c("chr1:100719411-100719996","chr15:63040511-63045764"),],breaks = 8) #VCAM1/TPM1
+fig4d_2 <- plot_accessibility_in_pseudotime(cds_subset_lin[c("chr11:26714753-26720418","chr4:71338336-71340367"),],breaks = 8) #SLC5A12/SLC4A4
 #png 467x639
 
 p <- pseudotime(cds_subset)
@@ -113,11 +98,11 @@ atacPT@active.ident <- ordered(atacPT@active.ident, levels = sort(as.numeric(lev
 motifmatrix <- atacPT@assays[["chromvar"]]@data[rownames(atacPT@assays[["chromvar"]]) %in% c("REL","RELA","FOS::JUN","HNF4A","HNF1A","PPARA::RXRA","NR1H2::RXRA"),]
 motifmatrix <- motifmatrix[c("REL","RELA","FOS::JUN","HNF4A","HNF1A","PPARA::RXRA","NR1H2::RXRA"),] #Re-order
 
-fig4g <- pheatmap::pheatmap(motifmatrix,cluster_cols = F,cluster_rows = F,scale = "column",border_color = "NA",show_colnames=F)
+fig4e <- pheatmap::pheatmap(motifmatrix,cluster_cols = F,cluster_rows = F,scale = "column",border_color = "NA",show_colnames=F)
 
 sub_atac <- SetFragments(object = sub_atac, file = "outs_atac/fragments.tsv.gz")
 
-figS4c_1 <- CoveragePlot(
+figS11_1 <- CoveragePlot(
   object = sub_atac,
   region = "chr1:100719411-100719996",
   sep = c(":", "-"),
@@ -126,7 +111,7 @@ figS4c_1 <- CoveragePlot(
   annotation = EnsDb.Hsapiens.v86,
 ) #VCAM1
 
-figS4c_2 <- CoveragePlot(
+figS11_2 <- CoveragePlot(
   object = sub_atac,
   region = "chr15:63040511-63045764",
   sep = c(":", "-"),
@@ -135,7 +120,7 @@ figS4c_2 <- CoveragePlot(
   annotation = EnsDb.Hsapiens.v86,
 ) #TPM1
 
-figS4c_3 <- CoveragePlot(
+figS11_3 <- CoveragePlot(
   object = sub_atac,
   region = "chr11:26714753-26720418",
   sep = c(":", "-"),
@@ -144,7 +129,7 @@ figS4c_3 <- CoveragePlot(
   annotation = EnsDb.Hsapiens.v86,
 ) #SLC5A12
 
-figS4c_4 <- CoveragePlot(
+figS11_4 <- CoveragePlot(
   object = sub_atac,
   region = "chr4:71338336-71340367",
   sep = c(":", "-"),
@@ -152,10 +137,4 @@ figS4c_4 <- CoveragePlot(
   extend.downstream = 5000,
   annotation = EnsDb.Hsapiens.v86,
 ) #SLC4A4
-
-DefaultAssay(sub_atac) <- "chromvar"
-figS4d_1 <- FeaturePlot(sub_atac,features = "RELA",cols =jdb_palette("brewer_yes"),order=T)
-figS4d_2 <- FeaturePlot(sub_atac,features = "FOS::JUN",cols =jdb_palette("brewer_yes"),order=T)
-
-
 
