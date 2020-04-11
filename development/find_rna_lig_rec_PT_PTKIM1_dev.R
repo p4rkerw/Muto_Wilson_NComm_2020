@@ -11,7 +11,7 @@ library(here)
 #download if necessary at wget 
 url <- "http://fantom.gsc.riken.jp/5/suppl/Ramilowski_et_al_2015/data/PairsLigRec.txt"
 download.file(url, destfile = paste0("ligand_receptor/",basename(url)))
-allPair <- read.table("ligand_receptor/PairsLigRec.txt", sep ="\t", header = T)
+allPair <- read.table("ligand_receptor/PairsLigRec.txt", sep ="\t", header = T,quote = "")
 
 #load seurat object and reassign / merge clusters based on expression of lineage-specific markers using the splitdot and TSNE plots
 rnaAggr <- readRDS("cellranger_rna_prep/rnaAggr_control.rds")

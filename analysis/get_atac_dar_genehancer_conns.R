@@ -5,6 +5,7 @@ library(openxlsx)
 library(dplyr)
 library(biomaRt)
 library(here)
+library(tibble)
 
 # load DAR and filter by adjusted pval, distance from DAR to nearest gene, average log-fold change of DAR,
 # and the proportion of cells containing the DAR
