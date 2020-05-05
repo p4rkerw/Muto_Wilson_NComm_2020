@@ -14,16 +14,16 @@ set.seed(1234)
 rnaAggr <- readRDS("cellranger_rna_prep/rnaAggr_control.rds")
 Idents(rnaAggr) <- "celltype"
 
-fig1a <- DimPlot(rnaAggr, reduction = "umap",label = T, repel = T) + NoLegend()
+fig1a <- DimPlot(rnaAggr, reduction = "umap") + NoLegend() #720x580
 
 # reorder the idents and save celltype annotations in celltype slot metadata
 levels(rnaAggr) <- rev(levels(rnaAggr))
-features <- c("SLC34A1","HAVCR1","CFH","SLC12A1","SLC12A3",
+features <- c("SLC34A1","LRP2","HAVCR1","CFH","SLC12A1","SLC12A3",
               "SLC8A1","AQP2","SLC26A7","SLC26A4","NPHS2",
               "EMCN","PIEZO2","COL1A2","PTPRC")
 fig1b <- DotPlot(rnaAggr, features = rev(features), cols = c("lightyellow","royalblue")) +
   RotatedAxis() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
 #snATAC-seq
@@ -36,18 +36,18 @@ fig1c_5 <- DimPlot(sub_atac, label = T, repel = T,group.by = "highres.predicted.
 
 
 Idents(sub_atac) <- "celltype"
-fig1d_2 <- DimPlot(sub_atac, label = T, repel = T) + NoLegend()
+fig1d_2 <- DimPlot(sub_atac) + NoLegend() #720x580
 
 # reorder the idents and save celltype annotations in celltype slot metadata
 levels(sub_atac) <- rev(c("PCT","PST","PT_KIM1","PEC","TAL",
                           "DCT","CNT","PC","ICA","ICB",
                           "PODO","ENDO","MES_FIB","LEUK"))
-features <- c("SLC34A1","SLC5A2","SLC5A1","HAVCR1","CFH",
+features <- c("SLC34A1","LRP2","SLC5A2","SLC5A1","HAVCR1","CFH",
               "SLC12A1","SLC12A3","SLC8A1","AQP2","SLC26A7",
               "SLC26A4","NPHS2","EMCN","ACTA2","PTPRC")
 DefaultAssay(sub_atac) <- "RNA"
 fig1e <- DotPlot(sub_atac, features = rev(features),cols = c("lightyellow","royalblue")) +
-  RotatedAxis()
+  RotatedAxis() #820x580
 
 
 rnaAggr@meta.data[["tech"]] <- "RNA"

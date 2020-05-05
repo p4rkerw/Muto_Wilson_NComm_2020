@@ -27,13 +27,13 @@ aver_chromvar <- aver_chromvar[do.call(order, c(aver_chromvar, list(decreasing=T
 aver_chromvar$max <- max.col(aver_chromvar)
 aver_chromvar <- aver_chromvar[order(aver_chromvar$max), ]
 aver_chromvar <- dplyr::select(aver_chromvar, -max)
-colnames(aver_chromvar) <- idents
+colnames(aver_chromvar) <- levels(Idents(sub_atac))
 
 # visualize results
 fig3a <- pheatmap::pheatmap(aver_chromvar,scale = "row",
                             cluster_cols=F,cluster_rows = F,
                             color = jdb_palette("brewer_yes"),
-                            show_rownames=F)
+                            show_rownames=F) #450x640
 
 # HNF4A does not appear to be in the pwm for JASPAR2018
 DefaultAssay(sub_atac) <- "chromvar"
