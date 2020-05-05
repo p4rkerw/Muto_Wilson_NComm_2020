@@ -6,6 +6,7 @@ library(Signac)
 library(stringr)
 library(plyranges)
 library(openxlsx)
+library(dplyr)
 
 # function for identifying peaks within a given cell type and filtering for the proportion of cells containing the peak
 Find_CR_Celltype_Peaks <- function(celltype, pct.ref.cells, seurat_agg) {
