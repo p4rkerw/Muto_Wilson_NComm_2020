@@ -31,7 +31,11 @@ dds <- dds[keep,]
 
 # perform DESeq data analysis and extract normalized counts
 dds <- DESeq(dds)
-counts <- counts(dds, normalized=TRUE)[-1,] # remove the normalization factor in the first row
+counts <- data.frame(counts(dds, normalized=TRUE)[-1,]) # remove the normalization factor in the first row
+
+# convert counts to numeric integer values to operate with rowmeans and sort by max count per gene
+i <- seq(colnames(counts))
+counts[ , i] <- apply(counts[ , i], 2, function(x) as.integer(x))
 
 # convert rat genes to human hgnc
 ratGenes = rownames(counts)
@@ -41,9 +45,10 @@ lookup_table = getLDS(attributes = c("rgd_symbol"), filters = "rgd_symbol", valu
 
 # extract the counts from genes that are shared between species
 colnames(lookup_table)[1] <- "symbol"
-counts <- data.frame(assay(dds))[-1,]
 counts <- rownames_to_column(counts, var = "symbol")
 counts <- merge(x=lookup_table, y=counts, by="symbol") 
+
+# calculate maximum transcript count per gene and sort genes
 counts$rowMean <- rowMeans(as.matrix(counts[3:ncol(counts)]), na.rm = TRUE)
 counts <- dplyr::arrange(counts, desc(HGNC.symbol, rowMean)) %>%
   dplyr::distinct(HGNC.symbol, .keep_all=TRUE) %>%
