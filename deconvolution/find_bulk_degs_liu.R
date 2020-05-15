@@ -11,8 +11,6 @@ library(purrr)
 library(openxlsx)
 # library(EnsDb.Hsapiens.v86)
 
-
-
 # read in the FPKM counts 
 mouseCounts <- read.xlsx("comparison_mouse_datasets/liu_PMID28931758/GSE98622_mouse-iri-master.xlsx") %>%
   dplyr::filter(grepl("ENSM", X1)) %>%
@@ -51,6 +49,7 @@ dds <- DESeqDataSetFromMatrix(counts,
 
 # do not put through DESeq2 because these are FPKM as opposed to read counts or transcript abundance
 # dds <- DESeq(dds)
+# counts <- counts(dds, normalized=TRUE)[-1]
 # do not normalize the FPKM values
 
 # convert dds to a dgelist object and then an expressionset to prepare for deconvolution 
