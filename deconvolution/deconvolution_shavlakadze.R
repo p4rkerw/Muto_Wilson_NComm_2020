@@ -16,7 +16,8 @@ scrna_eset@phenoData$celltype <- rnaAggr$celltype
 sc.markers <- FindAllMarkers(rnaAggr, min.pct = 0.25, only.pos = TRUE) # only.pos=TRUE
 list.markers <- sapply(levels(rnaAggr), function(x) {
   df <- dplyr::filter(sc.markers, cluster == x)  %>%
-    dplyr::filter(avg_logFC > 1 & p_val_adj < 0.01) %>%
+    # dplyr::filter(avg_logFC > 1 & p_val_adj < 0.01) %>%
+    dplyr::filter(p_val_adj < 0.01) %>%
     # dplyr::arrange(desc(avg_logFC, p_val_adj)) %>%
     # dplyr::slice(1:150)  %>%
     dplyr::select(gene)
