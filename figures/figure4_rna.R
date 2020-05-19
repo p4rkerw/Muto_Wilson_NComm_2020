@@ -4,10 +4,16 @@ library(ggplot2)
 library(dplyr)
 library(Matrix)
 library(here)
+library(BuenColors)
 set.seed(1234)
 
 #snRNA-seq data
 rnaAggr <- readRDS("cellranger_rna_prep/rnaAggr_control.rds")
+new.fig4a <- FeaturePlot(rnaAggr,"VCAM1",order=T) #700x600
+new.figS10a_1 <- FeaturePlot(rnaAggr,"TPM1",order=T) #700x600
+new.figS10a_2 <- FeaturePlot(rnaAggr,"SLC5A12",order=T) #700x600
+new.figS10a_3 <- FeaturePlot(rnaAggr,"SLC4A4",order=T) #700x600
+
 #Idents(rnaAggr) <- "celltype"
 count_data <- GetAssayData(rnaAggr, assay = "RNA",slot = "counts")
 
@@ -22,7 +28,7 @@ cds <- new_cell_data_set(as(count_data, "sparseMatrix"),
 cds <- preprocess_cds(cds, num_dim = 100)
 cds = align_cds(cds, num_dim = 100, alignment_group = "orig.ident")
 cds = reduce_dimension(cds,preprocess_method = "Aligned")
-fig4a_1 <- plot_cells(cds, color_cells_by="celltype", 
+#fig4a_1 <- plot_cells(cds, color_cells_by="celltype", 
            group_label_size = 0) #png: 570x540
 
 #subclustering
@@ -38,6 +44,9 @@ fig4a_2 <- plot_cells(cds_subset,
            label_branch_points=FALSE,
            show_trajectory_graph=T) #png 560x430
 
+pseudotime <- as.data.fra.e(cds_subset@principal_graph_aux@listData[["UMAP"]][["pseudotime"]])
+pt <- AddMetaData(pt,pseudotime)
+FeaturePlot(pt,"pseudotime",cols = jdb_palette("brewers_yes"))
 
 genes <- c("VCAM1","TPM1","SLC5A12","SLC4A4")
 lineage_cds <- cds_subset[rowData(cds_subset)$gene_short_name %in% genes,]

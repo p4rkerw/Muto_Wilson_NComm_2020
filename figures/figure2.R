@@ -11,6 +11,8 @@ library(openxlsx)
 set.seed(1234)
 
 sub_atac <- readRDS("cellranger_atac_prep/atacAggr_sub97_control.rds")
+sub_atac <- SetFragments(object = sub_atac, file = "outs_atac/fragments.tsv.gz")
+
 darfile <- "analysis_control/dar.celltype.control.xlsx"
 idents <- getSheetNames(darfile)
 list.dar <- lapply(idents, function(x) {
@@ -27,7 +29,7 @@ all_dar <- bind_rows(list.dar) %>%
 
 dar_aver <- AverageExpression(sub_atac, features = all_dar$coord, assays = "peaks")
 fig2a <- pheatmap::pheatmap(dar_aver[["peaks"]], scale = 'row', cluster_rows = F, cluster_cols = F,
-                            show_rownames = FALSE)
+                            show_rownames = FALSE) #520x630
 
 sub_atac <- SetFragments(object = sub_atac, file = here(outs_atac, "fragments.tsv.gz"))
 
@@ -38,7 +40,7 @@ fig2b <- CoveragePlot(
   extend.upstream = 5000,
   extend.downstream = 5000,
   annotation = EnsDb.Hsapiens.v86,
-)
+) #800x800
 
 
 library(ChIPseeker)

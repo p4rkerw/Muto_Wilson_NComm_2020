@@ -46,8 +46,8 @@ bulk_eset@phenoData@data$group <- factor(bulk_eset@phenoData@data$group,
                                                      "IRI7d","IRI14d","IRI28d","IRI12m"))
 
 toplot <- bulk_eset@phenoData@data %>%
-  dplyr::select(group, PT_KIM1)
-p1 <- ggplot(toplot, aes(x=group, y=PT_KIM1, fill=group)) + 
+  dplyr::select(group, PT_VCAM1)
+p1 <- ggplot(toplot, aes(x=group, y=PT_VCAM1, fill=group)) + 
   geom_boxplot() + 
   xlab("Treatment Group") +
   ylab("Proportion of PT_VCAM1 Cells") +
