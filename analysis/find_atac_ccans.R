@@ -1,7 +1,8 @@
 # this script will generate cis-coaccessibility networks for individual celltypes. 
 library(Signac) # 0.2.1
 library(Seurat) # 3.0.2
-library(cicero) # 1.2
+library(cicero) # 1.3.4
+library(monocle3) # 3.0.2
 library(dplyr)
 library(here)
 library(openxlsx)
@@ -21,18 +22,14 @@ PrepareCiceroCDS <- function(seurat_obj) {
   
   # input_cds <- input_cds[Matrix::rowSums(exprs(input_cds)) != 0,] 
   set.seed(2017)
-  input_cds <- detectGenes(input_cds)
-  print(colnames(pData(input_cds)))
-  input_cds <- estimateSizeFactors(input_cds)
+  input_cds <- detect_genes(input_cds)
+  input_cds <- estimate_size_factors(input_cds)
+  input_cds <- preprocess_cds(input_cds, method="LSI")
+  input_cds <- reduce_dimension(input_cds, reduction_method="UMAP", preprocess_method="LSI")
   
-  # *** if you are using Monocle 3, you need to run the following line as well!
-  #input_cds <- preprocessCDS(input_cds, norm_method = "none")
-  input_cds <- reduceDimension(input_cds, max_components = 2, num_dim=6,
-                               reduction_method = 'tSNE', norm_method = "none")
+  umap_coords <- reducedDims(input_cds)$UMAP
+  cicero_cds <- make_cicero_cds(input_cds, reduced_coordinates=umap_coords)
   
-  tsne_coords <- t(reducedDimA(input_cds)) # dimensional reduction coords could be extracted from seurat object
-  row.names(tsne_coords) <- row.names(pData(input_cds))
-  cicero_cds <- make_cicero_cds(input_cds, reduced_coordinates = tsne_coords) 
   return(cicero_cds)
 }
 
@@ -75,20 +72,34 @@ FindCiceroConns <- function(cds, chrom = NULL) {
   return(conns)
 }
 
-Get_Ccans <- function(clusterID, seurat_agg) {
-  print(paste0("Calculating CCAN for: ",clusterID))
-  atacAggr <- seurat_agg
-  seuratSub <- subset(atacAggr, ident = clusterID) # create a subset
-  
+Get_Ccans <- function(clusterID=NULL, seurat_agg) {
+  if(!is.null(clusterID)) {
+    print(paste0("Subsetting seurat object for: ",clusterID))
+    seurat_agg <- subset(seurat_agg, ident = clusterID) # create a subset
+  } 
   # convert seurat objects into cicero cell datasets in preparation for detecting cicero connections
-  ciceroCds <- PrepareCiceroCDS(seuratSub)
+  print("Preparing Cicero CDS")
+  ciceroCds <- PrepareCiceroCDS(seurat_agg)
   
   # generate disease-specific CCANS for all chromsomes of a particular celltype
   # FindCiceroConns can also take specific seqLevels eg.
   # seqLevels <- paste0("chr",c(21,22))
   # FindCiceroConns(cds, seqLevels)
+  print("Finding Cicero connections")
   conns <- FindCiceroConns(ciceroCds)
-  return(conns)
+  
+  CCAN_assigns <- generate_ccans(conns)
+
+  # create a column that identifies which connections belong to a CCAN
+  ccan1 <- left_join(conns, CCAN_assigns, by=c("Peak1" = "Peak"), all.x=TRUE)
+  colnames(ccan1)[4] <- "CCAN1"
+  ccan2 <- left_join(conns, CCAN_assigns, by=c("Peak2" = "Peak"), all.x=TRUE)
+  colnames(ccan2)[4] <- "CCAN2"
+  df <- cbind(ccan1, CCAN2=ccan2$CCAN2) %>%
+    dplyr::mutate(CCAN = ifelse(CCAN1 == CCAN2, CCAN1, 0)) %>%
+    dplyr::select(-CCAN1, -CCAN2)
+  
+  return(df)
 }
 
 
@@ -104,9 +115,23 @@ list.ccan <- lapply(levels(atacAggr), function(ident) {Get_Ccans(ident, seurat_a
 dir.create("analysis_control/ccans", showWarnings = FALSE)
 names(list.ccan) <- levels(atacAggr)
 lapply(names(list.ccan), function(x) {
-  write.csv(list.ccan[[x]], file = paste0("analysis_control/ccans/ciceroConns.control.",x,".csv", row.names = TRUE))
+  fwrite(list.ccan[[x]], file = paste0("analysis_control/ccans/ciceroConns.control.",x,".csv"), row.names = TRUE)
 })
 
+# calculate a global CCAN for all celltypes
+ccan <- Get_Ccans(seurat_agg = atacAggr)
+fwrite(ccan, file = "analysis_control/ccans/ciceroConns.control.allcells.csv", row.names = TRUE)
 
+# identify which peaks belong to a CCAN
+CCAN_assigns <- generate_ccans(ccan)
 
+# create a column that identifies which connections belong to a CCAN
+ccan1 <- left_join(ccan, CCAN_assigns, by=c("Peak1" = "Peak"), all.x=TRUE)
+colnames(ccan1)[4] <- "CCAN1"
+ccan2 <- left_join(ccan, CCAN_assigns, by=c("Peak2" = "Peak"), all.x=TRUE)
+colnames(ccan2)[4] <- "CCAN2"
+df <- cbind(ccan1, CCAN2=ccan2$CCAN2) %>%
+  dplyr::mutate(CCAN = ifelse(CCAN1 == CCAN2, CCAN1, 0)) %>%
+  dplyr::select(-CCAN1, -CCAN2)
 
+fwrite(df, file = "analysis_control/ccans/ciceroConns.control.allcells.csv", row.names = TRUE)

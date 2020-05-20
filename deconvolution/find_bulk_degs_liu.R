@@ -23,7 +23,8 @@ mouse = useMart("ensembl", dataset = "mmusculus_gene_ensembl")
 lookup_table = getLDS(attributes = c("mgi_symbol"), filters = "mgi_symbol", values = mouseGenes , mart = mouse,
                    attributesL = c("hgnc_symbol"), martL = human, uniqueRows=T)
 
-# extract the counts from genes that are shared between species
+# extract the counts from genes that are shared between species, arrange by mean count per transcript and keep
+# the transcript with the most counts
 colnames(lookup_table)[1] <- "symbol"
 counts <- merge(x=lookup_table, y=mouseCounts, by="symbol") 
 counts$mean <- rowMeans(as.matrix(counts[5:ncol(counts)]), na.rm = TRUE)

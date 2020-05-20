@@ -33,7 +33,7 @@ dds <- dds[keep,]
 dds <- DESeq(dds)
 counts <- data.frame(counts(dds, normalized=TRUE)[-1,]) # remove the normalization factor in the first row
 
-# convert counts to numeric integer values to operate with rowmeans and sort by max count per gene
+# convert counts to numeric integer values
 i <- seq(colnames(counts))
 counts[ , i] <- apply(counts[ , i], 2, function(x) as.integer(x))
 
