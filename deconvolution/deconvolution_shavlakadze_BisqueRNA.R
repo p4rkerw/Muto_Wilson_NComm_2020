@@ -4,6 +4,7 @@ library(Seurat)
 library(dplyr)
 library(ggplot2)
 library(reshape)
+library(Biobase)
 
 rnaAggr <- readRDS("cellranger_rna_prep/rnaAggr_control.rds")
 
@@ -35,6 +36,21 @@ p1 <- ggplot(toplot, aes(x=group, y=PT_VCAM1, fill=group)) +
   xlab("Rat Age") +
   ylab("Proportion of PT_VCAM1 Cells") +
   ggtitle("Proportion of PT_VCAM1 Cells by Rat Age")
+
+# determine if there is a statistically significant difference between mean PT_VCAM1
+# proportion across time points using one-way ANOVA
+res.aov <- aov(PT_VCAM1 ~ group, data=toplot)
+summary(res.aov) # p=0.169
+
+# visualize a potential linear relationship between rat age and PT_VCAM1 proportion
+toplot$group <- gsub(pattern="m", replacement="", toplot$group)
+toplot <- dplyr::mutate(toplot, group = as.numeric(as.character(group)))
+scatter.smooth(x=toplot$group, y=toplot$PT_VCAM1, main="PT_VCAM1 vs Time")
+cor(toplot$group, toplot$PT_VCAM1) # correlation is 0.14
+
+# test for significant with a glm
+linearMod <- lm(PT_VCAM1 ~ group, data=toplot)
+summary(linearMod) # p=0.22
 
 toplot <- bulk_eset@phenoData@data %>%
   dplyr::select(group, PT)
