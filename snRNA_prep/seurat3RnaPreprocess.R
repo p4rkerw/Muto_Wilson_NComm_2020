@@ -127,7 +127,7 @@ rnaAggr <- RunUMAP(rnaAggr, dims = 1:24, verbose = TRUE, reduction = "harmony")
 # DimPlot(rnaAggr, reduction = "UMAP", assay = "SCT")
 p1 <- DimPlot(rnaAggr, reduction = "umap", assay = "SCT", label = TRUE) + ggtitle("snRNA Seurat Clustering with Harmony No Doublets")
 
-celltype.markers <- c("CUBN","HAVCR1","SLC5A1","SLC5A2", # PT and PT-KIM1+ markers
+celltype.markers <- c("CUBN","HAVCR1","SLC5A1","SLC5A2", # PT and PT-VCAM1+ markers
                       "CFH", # PEC
                       "SLC12A1", # TAL NKCC2
                       "SLC12A3","TRPM6", # DCT1 and DCT2 NCC
@@ -150,18 +150,18 @@ CombinePlots(plots = list(p1, p2))
 rnaAggr[["orig.clusters"]] <- Idents(object = rnaAggr) # stash cluster idents prior to annotation
 new.cluster.ids <- c("PT","DCT1","TAL","CNT","PT",
                      "TAL","ICA","TAL","PC","ENDO",
-                     "PEC","DCT2","PODO","PT_KIM1","ICB",
+                     "PEC","DCT2","PODO","PT_VCAM1","ICB",
                      "ENDO","MES","FIB","ENDO","LEUK")
 names(new.cluster.ids) <- levels(rnaAggr)
 rnaAggr <- RenameIdents(rnaAggr, new.cluster.ids)
 
 # reorder the idents and save celltype annotations in celltype slot metadata
-levels(rnaAggr) <- c("PT","PT_KIM1","PEC","TAL","DCT1",
+levels(rnaAggr) <- c("PT","PT_VCAM1","PEC","TAL","DCT1",
                      "DCT2","CNT","PC","ICA","ICB",
                      "PODO","ENDO","MES","FIB","LEUK")
 rnaAggr@meta.data$celltype <- rnaAggr@active.ident
 
-# create low-resolution celltype identities for snATAC thresholding (ie group PT and PT-KIM1 and distal nephron together)
+# create low-resolution celltype identities for snATAC thresholding (ie group PT and PT-VCAM1 and distal nephron together)
 lowres.cluster.ids <- c("PT","PT","PEC","TAL","DCT_CNT_PC",
                         "DCT_CNT_PC","DCT_CNT_PC","DCT_CNT_PC","ICA","ICB",
                         "PODO","ENDO","MES_FIB","MES_FIB","LEUK")

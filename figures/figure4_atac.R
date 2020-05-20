@@ -8,7 +8,7 @@ library(here)
 set.seed(1234)
 
 #Use the object with all version of jasper motifs
-sub_atac <- readRDS("cellranger_atac_prep/sub_atac_sub97_control.rds")
+sub_atac <- readRDS("cellranger_atac_prep/atacAggr_sub97_control_allT.rds")
 DefaultAssay(sub_atac) <- "peaks"
 count_data <- GetAssayData(sub_atac, slot = "counts")
 summ <- summary(count_data)
@@ -73,9 +73,9 @@ fig4c_2 <-   plot_cells(cds_subset,
 #markers <- cbind(markers, gene=cf$gene_name, distance=cf$distance)
 
 cds_subset_lin <- cds_subset[,is.finite(pseudotime(cds_subset))]
-fig4d_1 <- plot_accessibility_in_pseudotime(cds_subset_lin[c("chr1:100719411-100719996","chr15:63040511-63045764"),],breaks = 8) #VCAM1/TPM1
-fig4d_2 <- plot_accessibility_in_pseudotime(cds_subset_lin[c("chr11:26714753-26720418","chr4:71338336-71340367"),],breaks = 8) #SLC5A12/SLC4A4
-#png 467x639
+fig4d_1 <- plot_accessibility_in_pseudotime(cds_subset_lin[c("chr1:100719411-100719996","chr11:26714753-26720418"),],breaks = 8) #VCAM1/SLC5A12
+fig4d_2 <- plot_accessibility_in_pseudotime(cds_subset_lin[c("chr15:63040511-63045764","chr4:71338336-71340367"),],breaks = 8) #TPM1/SLC4A4
+#png 500x500
 
 p <- pseudotime(cds_subset)
 p <- p[order(p)]
@@ -98,7 +98,18 @@ atacPT@active.ident <- ordered(atacPT@active.ident, levels = sort(as.numeric(lev
 motifmatrix <- atacPT@assays[["chromvar"]]@data[rownames(atacPT@assays[["chromvar"]]) %in% c("REL","RELA","FOS::JUN","HNF4A","HNF1A","PPARA::RXRA","NR1H2::RXRA"),]
 motifmatrix <- motifmatrix[c("REL","RELA","FOS::JUN","HNF4A","HNF1A","PPARA::RXRA","NR1H2::RXRA"),] #Re-order
 
-fig4e <- pheatmap::pheatmap(motifmatrix,cluster_cols = F,cluster_rows = F,scale = "column",border_color = "NA",show_colnames=F)
+#fig4e <- pheatmap::pheatmap(motifmatrix,cluster_cols = F,cluster_rows = F,scale = "column",border_color = "NA",show_colnames=F)
+
+pt <- RunUMAP(object = pt, reduction = 'harmony', dims = 1:40, assay.use = "peaks")
+pt <- FindNeighbors(object = pt, reduction = 'harmony', dims = 1:40, assay.use = "peaks")
+pt <- FindClusters(object = pt, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
+DefaultAssay(pt) <- "chromvar"
+DimPlot(pt, reduction ="umap", label = TRUE, repel = TRUE,group.by = "celltype")+NoLegend()
+VlnPlot(pt,"nCount_features",pt.size = 0)
+fig4e_1 <- FeaturePlot(sub_atac,features = "RELA",cols =jdb_palette("brewer_yes"))  #png 500x420
+fig4e_2 <- FeaturePlot(sub_atac,features = "HNF4A",cols =jdb_palette("brewer_yes")) 
+fig4e_3 <- FeaturePlot(pt,features = "RELA",cols =jdb_palette("brewer_yes"))  #png 500x420
+fig4e_4 <- FeaturePlot(pt,features = "HNF4A",cols =jdb_palette("brewer_yes")) 
 
 sub_atac <- SetFragments(object = sub_atac, file = "outs_atac/fragments.tsv.gz")
 
