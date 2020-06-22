@@ -34,7 +34,7 @@ toplot <- bulk_eset@phenoData@data %>%
   dplyr::select(age_group, age, PT_VCAM1)
 
 # determine if there is a statistically significant difference between mean PT_VCAM1
-# proportion across time points using one-way ANOVA
+# proportion across groups using one-way ANOVA
 res.aov <- aov(PT_VCAM1 ~ age_group, data=toplot)
 summary(res.aov) # p=0.71
 
@@ -64,12 +64,14 @@ p2 <- ggplot(toplot, aes(x=age_group, y=PT_VCAM1, fill=age_group)) +
   ggtitle("Proportion of PT_VCAM1 Cells by Patient Age Range TCGA")
 
 
-
-toplot$TCGA <- "TCGA"
-p3 <- ggplot(toplot, aes(x=TCGA, y=PT_VCAM1, fill=TCGA)) + 
+toplot <- bulk_eset@phenoData@data
+toplot <- dplyr::select(toplot, all_of(unique(new.cluster.ids)))
+toplot <- melt(toplot)
+p3 <- ggplot(toplot, aes(x=variable, y=value, fill=variable)) + 
   geom_boxplot() + 
-  xlab("Patient Age Range") +
-  ylab("Proportion of PT_VCAM1 Cells") +
-  ggtitle("Proportion of PT_VCAM1 Cells by Patient Age Range TCGA")
+  ylab("Proportion of Cells") +
+  xlab("") +
+  ggtitle("Estimated Proportion of Cells in Non-Tumor TCGA Bulk RNA-seq (n=72)") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 

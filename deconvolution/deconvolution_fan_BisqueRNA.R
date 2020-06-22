@@ -5,6 +5,7 @@ library(Seurat)
 library(dplyr)
 library(ggplot2)
 library(reshape)
+library(forcats)
 
 # read in bulk eset for diabetic nephropathy from fan et al
 bulk_eset <- readRDS("comparison_human_datasets/fan_PMID31578193/eset.bulkRna.rds")
@@ -25,20 +26,44 @@ scrna_eset@phenoData$celltype <- rnaAggr$celltype
 # and estimate cell proportions
 res <- BisqueRNA::ReferenceBasedDecomposition(bulk_eset, scrna_eset, markers=NULL, use.overlap=F)
 pData(bulk_eset) <- cbind(pData(bulk_eset), t(res[["bulk.props"]]))
+pData(bulk_eset)$group <- dplyr::recode(pData(bulk_eset)$group, A="Advanced", N="Control", B="Early")
+pData(bulk_eset) <- dplyr::mutate(pData(bulk_eset), group = factor(group, levels = c("Control","Early","Advanced")))
+
+# calculate mean of PT_VCAM1 proportion across groups
+ctrl <- pData(bulk_eset)[pData(bulk_eset)$group == "Control",]
+mean(ctrl$PT_VCAM1)
+
+early <- pData(bulk_eset)[pData(bulk_eset)$group == "Early",]
+mean(early$PT_VCAM1)
+
+adv <- pData(bulk_eset)[pData(bulk_eset)$group == "Advanced",]
+mean(adv$PT_VCAM1)
+sd(adv$PT_VCAM1)
+
+# determine if there is a statistically significant difference between mean PT_VCAM1
+# proportion across groups using one-way ANOVA
+toplot <- bulk_eset@phenoData@data
+res.aov <- aov(PT_VCAM1 ~ group, data=toplot)
+summary(res.aov) # p=0.71
 
 # metadata located here
 # group A=advanced, B=early, N=normal 
 toplot <- bulk_eset@phenoData@data %>%
-  dplyr::select(group, PT) %>%
-  dplyr::mutate(group = factor(group, labels=c("Control","Advanced","Early")))
+  dplyr::select(group, PT) 
 p1 <- ggplot(toplot, aes(x=group, y=PT, fill=group)) + 
-  geom_boxplot()
+  xlab("") +
+  geom_boxplot() +
+  ggtitle("Estimated Proportion of PT \nHuman Diabetic Nephropathy \n(Fan 2019) (n=36)") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 toplot <- bulk_eset@phenoData@data %>%
-  dplyr::select(group, PT_VCAM1) %>%
-  dplyr::mutate(group = factor(group, labels=c("Control","Advanced","Early")))
+  dplyr::select(group, PT_VCAM1) 
 p2 <- ggplot(toplot, aes(x=group, y=PT_VCAM1, fill=group)) + 
-  geom_boxplot()
+  xlab("") +
+  geom_boxplot() +
+  ggtitle("Estimated Proportion of PT_VCAM1 \nHuman Diabetic Nephropathy \n(Fan 2019) (n=36)")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
 
 CombinePlots(list(p1,p2))
 
