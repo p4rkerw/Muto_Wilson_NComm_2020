@@ -6,8 +6,16 @@
 # eg. bash cellrangerAtacCount.sh libraryID path/to/fastq
 
 # count the fastq files 
+# cellranger-atac count \
+# --id=ADN2_034 \
+# --reference=/home/parkerw/reference/refdata-cellranger-atac-GRCh38-1.2.0 \
+# --fastqs=. \
+# --sample=ADN2_034
+
+# count the fastq files 
 cellranger-atac count \
 --id=$1 \
 --reference=/home/parkerw/reference/refdata-cellranger-atac-GRCh38-1.2.0 \
 --fastqs=$2 \
 --sample=$1
+
