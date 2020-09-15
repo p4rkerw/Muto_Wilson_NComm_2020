@@ -6,9 +6,8 @@ $STORAGE1/diabneph/cellranger_atac_counts:$HOME/counts \
 $STORAGE1/diabneph/cellranger_rna_counts:$HOME/rna_counts \
 $STORAGE1/reference/refdata-cellranger-atac-GRCh38-1.2.0/fasta:$HOME/ref \
 $STORAGE1/reference/gatk:$HOME/gatk_bundle \
-$HOME/healthy_dev/gatk:$HOME/github_repository \
 $SCRATCH1:$SCRATCH1"
-bsub -Is -G compute-parkerw -R 'rusage[mem=128GB]' -q general-interactive -a 'docker(broadinstitute/gatk:4.1.8.1)' bash gatk_genotype.sh
+bsub -Is -G compute-parkerw -R 'rusage[mem=128GB]' -q general-interactive -a 'docker(broadinstitute/gatk:4.1.8.1)' bash healthy_dev/gatk/gatk_genotype.sh
 
 # prepare a fasta dict file using the cellranger-atac ref
 # gatk CreateSequenceDictionary -R /ref/genome.fa
