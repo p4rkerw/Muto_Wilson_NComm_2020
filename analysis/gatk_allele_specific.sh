@@ -15,7 +15,7 @@
 # $STORAGE1/diabneph/cellranger_rna_counts:$HOME/counts \
 # $STORAGE1/reference/GRCh38-1.2.0_premrna/fasta:$HOME/ref \
 # $SCRATCH1:$SCRATCH1"
-# bsub -G compute-parkerw -R 'rusage[mem=32GB]' -q general -o allspec1.out -a -a 'docker(broadinstitute/gatk:4.1.8.1)' bash healthy_dev/gatk/gatk_allele_specific.sh Control_1
+# bsub -G compute-parkerw -R 'rusage[mem=32GB]' -q general -o allspec1.out -a 'docker(broadinstitute/gatk:4.1.8.1)' bash healthy_dev/gatk/gatk_allele_specific.sh Control_1
 
 # run the container and mount the STAR scRNA aligned bam files
 # along with the vcf containing patient genotypes
