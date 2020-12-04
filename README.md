@@ -17,7 +17,7 @@ http://humphreyslab.com/SingleCell/
 <br/><br/>
 Find us on Twitter: 
 <br/>
-<a href="https://twitter.com/HumphreysLab?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @HumphreysLab  
+<a href="https://twitter.com/HumphreysLab?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @HumphreysLab  .
 <br/>
 Thanks,  
 Parker and Yoshi
