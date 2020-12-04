@@ -67,6 +67,9 @@ corr_chromVar_TF_exp.R
 18. Correlate cicero gene activity in the snATAC dataset with gene expression in the snRNA dataset (analysis)  
 corr_cicero_gene_exp.R  
 
+19. Perform pseudotemporal ordering of the distal nephron with Monocle (analysis)  
+pseudotime_distal_nephron.R  
+
 **Deconvolution:**    
 Each dataset is first prepared as an ExpressionSet and then deconvolved with Bisque using the snRNA library. When necessary, transcript counts are prepared with Salmon and GRCh38.
 1. Fan et al Human Diabetic Nephropathy (PMID:31578193, GSE142025)  
@@ -94,9 +97,6 @@ Each script has an example command to run the corresponding docker container
 5. Apply the WASP pipeline to cellranger-aligned bam files and realign overlapping variants with STAR  
 6. Get allele-specific counts with GATK ASEReadCounter  
 7. Filter heterozygous SNV and perform allele-specific analysis with ASEP  
-
-**Pseudotemporal ordering of the distal nephron with Monocle3:**    
-pseudotime_distal_nephron.R  
 
 **Utility Scripts:**    
 getContigLengths.py  
