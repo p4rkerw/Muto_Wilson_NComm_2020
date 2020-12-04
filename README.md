@@ -10,4 +10,4 @@ Thank you,
 Parker and Yoshi
 
 Sample analysis and processing workflow:
-1. 
+1. Generate a custom pre-mRNA index for cellranger
