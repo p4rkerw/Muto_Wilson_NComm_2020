@@ -32,14 +32,62 @@ cellranger_atac_aggr.sh
 7. Processs the aggregated snATAC library and integrate with the snRNA library to remove doublets with label transfer. This script will generate a processed snATAC library file atacAggr_control.rds (snATAC_prep)  
 signac_atac_process.sh  
 
-8. Identify cell-specific differentially expressed genes in the snRNA dataset (analysis)
+8. Find cell-specific differentially expressed genes in the snRNA dataset (analysis)  
 find_rna_deg.R  
 
-9. Identify cell-specific differentially accessible chromatin in the snATAC dataset (analysis)  
-find_atac_dar.R  
+9. Find cell-specific differentially accessible chromatin in the snATAC dataset (analysis)  
+find_atac_dar.R
 
-10. Find differentially expressed genes with nearby differentially accessible chromatin regions (analysis)  
+10. Compare snATAC peaks with dnase hypersensitive sites (analysis)  
+find_atac_overlap_dnase.R  
+
+11. Find differentially expressed genes with nearby differentially accessible chromatin regions (analysis)  
 find_overlap_deg_dar.R  
 
-11.
+12. Find cis-coaccessibility networks in the snATAC dataset with Cicero (analysis)  
+find_atac_ccans.R  
+
+13. Annotate cis-coaccessibility networks and create circos plots to visualize links (analysis)  
+annotate_ccans_circos.R
+
+14. Annotate cis-coaccessibility networks to find promoter-enhancer links (analysis)  
+annotate_peaks_fantom.R
+
+15. Annotate cis-coaccessibility networks to find overlap with the GeneHancer database (analysis)
+get_atac_dar_genehancer_conns.R
+find_atac_overlap_ccans_genehancer.R
+
+16. Find transcription factor motif activity in the snATAC dataset with chromVAR (analysis)  
+find_atac_chromVAR.R  
+
+17. Correlate transcription factor motif activity in the snATAC dataset with gene expression in the snRNA dataset (analysis)  
+corr_chromVar_TF_exp.R  
+
+18. Correlate cicero gene activity in the snATAC dataset with gene expression in the snRNA dataset (analysis)  
+corr_cicero_gene_exp.R  
+
+Deconvolution:  
+Each dataset is first prepared as an ExpressionSet and they deconvolved with Bisque using the snRNA library. When necessary, transcript counts are prepared with Salmon and GRCh38.
+1. Fan et al Human Diabetic Nephropathy (PMID:31578193, GSE142025)  
+salmon_count_fan.R  
+find_bulk_degs_fan.R  
+deconvolution_fan_BisqueRNA.R  
+
+2. Liu et al Mouse Kidney IRI (PMID:24569379, GSE98622)  
+find_bulk_degs_liu.R  
+deconvolution_liu_BisqueRNA.R  
+
+3. TCGA non-tumor Kidney  
+find_bulk_degs_tcga.R  
+deconvolution_tcga_BisqueRNA.R  
+
+Pseudotemporal ordering of the distal nephron with Monocle3:  
+pseudotime_distal_nephron.R  
+
+Utility Scripts:  
+getContigLengths.py  
+make_ucsc_tracks.R  
+
+
+
 
