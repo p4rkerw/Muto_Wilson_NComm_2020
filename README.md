@@ -21,7 +21,7 @@ Find us on Twitter:
   <a href="https://twitter.com/YoshiharuMuto?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false"> @YoshiharuMuto</a>
   <a href="https://twitter.com/HumphreysLab?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false"> @HumphreysLab</a>
 <br/>
-[Find us on dockerHub:]="https://hub.docker.com/search?q=p4rkerw&type=image"
+[Find us on dockerHub:](https://hub.docker.com/search?q=p4rkerw&type=image)
 <br/>
 
 Thanks,  
