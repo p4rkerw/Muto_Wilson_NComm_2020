@@ -104,7 +104,8 @@ find_bulk_degs_tcga.R
 deconvolution_tcga_BisqueRNA.R  
 
 **Allele Specific Analysis:**    
-These scripts can be run in publicly-available docker containers found at https://hub.docker.com/ username: p4rkerw  
+These scripts can be run in publicly-available docker containers found here: [p4rkerw@dockerhub](https://hub.docker.com/search?q=p4rkerw&type=image)
+
 Each script has an example command to run the corresponding docker container  
 
 (Follow the steps in order) 
