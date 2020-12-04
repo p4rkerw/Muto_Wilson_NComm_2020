@@ -16,11 +16,17 @@ Libraries were generated from a nuclear dissociation and require a custom pre-mR
 2. Count each of the five snRNA libraries with cellranger and GRCh38-1.2.0 (snRNA_prep)  
 cellranger_rna_count.sh  
 
-3. Aggregate the five snRNA libraries (snRNA_prep) using the cellranger_rna_aggr.csv file  
+3. Aggregate the five snRNA libraries using the cellranger_rna_aggr.csv file (snRNA_prep)    
 cellranger_rna_aggr.sh  
 
-4. Process the aggregated snRNA library and exclude doublets identified with DoubletFinder. This script will generate a processed snRNA library file rnaAggr_control.rds  
+4. Process the aggregated snRNA library and exclude doublets identified with DoubletFinder. This script will generate a processed snRNA library file rnaAggr_control.rds (snRNA_prep)    
 seurat_rna_process.sh  
 
-5. Count each of the five snATAC libraries with cellranger-atac and refdata-cellranger-atac-GRCh38-1.2.0  
+5. Count each of the five snATAC libraries with cellranger-atac and refdata-cellranger-atac-GRCh38-1.2.0 (snATAC_prep)  
+cellranger_atac_count.sh
+
+6. Aggregate the five snATAC libraries using the cellranger_atac_aggr.csv file (snATAC_prep)      
+cellranger_atac_aggr.sh  
+
+7. Processs the aggregated snATAC library and integrate with the snRNA library to remove doublets with label transfer. This script will generate a processed snATAC library file atacAggr_control.rds
 
