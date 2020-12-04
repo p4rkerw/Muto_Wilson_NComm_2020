@@ -68,7 +68,7 @@ corr_chromVar_TF_exp.R
 corr_cicero_gene_exp.R  
 
 **Deconvolution:**    
-Each dataset is first prepared as an ExpressionSet and they deconvolved with Bisque using the snRNA library. When necessary, transcript counts are prepared with Salmon and GRCh38.
+Each dataset is first prepared as an ExpressionSet and then deconvolved with Bisque using the snRNA library. When necessary, transcript counts are prepared with Salmon and GRCh38.
 1. Fan et al Human Diabetic Nephropathy (PMID:31578193, GSE142025)  
 salmon_count_fan.R  
 find_bulk_degs_fan.R  
