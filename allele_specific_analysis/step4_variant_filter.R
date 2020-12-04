@@ -15,7 +15,7 @@
 # for SAMPLE in ${SAMPLE_ARRAY[*]}
 # do
 # bsub -Is -G compute-parkerw -R 'rusage[mem=64GB]' -n 10 -q general-interactive -a 'docker(p4rkerw/asep:latest)' \
-# Rscript healthy_dev/gatk/rna_allele_specific/step4_variant.filter.R Control_${SAMPLE} atac_genotype
+# Rscript $REPO/allele_specific_analysis/step4_variant.filter.R Control_${SAMPLE} atac_genotype
 # done
 
 # TO RUN LOCALLY

@@ -21,7 +21,7 @@
 # for SAMPLE in ${SAMPLE_ARRAY[*]}
 # do
 # bsub -G compute-parkerw -J "wasp${SAMPLE}" -o "wasp${SAMPLE}.out" -R 'rusage[mem=128GB]' -q general -a 'docker(p4rkerw/wasp:1.0)' \
-# bash healthy_dev/gatk/rna_allele_specific/step5_wasp_se.sh Control_${SAMPLE} joint premrna
+# bash $REPO/allele_specific_analysis/step5_wasp_se.sh Control_${SAMPLE} joint premrna
 # done
 
 # TO RUN INTERACTIVE LOCALLY

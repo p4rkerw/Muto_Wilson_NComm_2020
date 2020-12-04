@@ -20,7 +20,7 @@
 # for SAMPLE in ${SAMPLE_ARRAY[*]}
 # do
 # bsub -G compute-parkerw -J "gatkc${SAMPLE}" -R 'rusage[mem=32GB]' -q general\
-#  -a 'docker(broadinstitute/gatk:4.1.8.1)' -o $SCRATCH1/gatkc${SAMPLE}.out bash healthy_dev/gatk/step1_gatk_rna_genotype.sh Control_${SAMPLE}
+#  -a 'docker(broadinstitute/gatk:4.1.8.1)' -o $SCRATCH1/gatkc${SAMPLE}.out bash $REPO/allele_specific_analysis/step1_gatk_rna_genotype.sh Control_${SAMPLE}
 # done
 
 # TO RUN LOCALLY

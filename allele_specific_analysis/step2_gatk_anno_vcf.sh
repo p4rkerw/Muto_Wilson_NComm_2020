@@ -22,7 +22,7 @@
 # for SAMPLE in ${SAMPLE_ARRAY[*]}
 # do
 # bsub -G compute-parkerw -R 'rusage[mem=32GB]' -q general -J "annoc${SAMPLE}" -a 'docker()' -o $SCRATCH1/annoc${SAMPLE}.out \
-# bash healthy_dev/gatk/rna_allele_specific/step2_gatk_anno_vcf.sh Control_${SAMPLE} $HOME/vcf/atac_genotype
+# bash $REPO/allele_specific_analysis/step2_gatk_anno_vcf.sh Control_${SAMPLE} $HOME/vcf/atac_genotype
 # done
 
 export PATH=$PATH:/gatk:/opt/miniconda/envs/gatk/bin:/gatk:/opt/miniconda/envs/gatk/bin:/opt/miniconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

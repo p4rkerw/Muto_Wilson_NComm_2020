@@ -23,7 +23,7 @@
 # for SAMPLE in ${SAMPLE_ARRAY[*]}
 # do
 # bsub -G compute-parkerw -R 'rusage[mem=64GB]' -J allCnt_${SAMPLE} -q general -o allcnt_${SAMPLE}.out -a 'docker(broadinstitute/gatk:4.1.8.1)' \
-# bash healthy_dev/gatk/rna_allele_specific/step6_gatk_alleleCount.sh Control_${SAMPLE} joint
+# bash $REPO/allele_specific_analysis/step6_gatk_alleleCount.sh Control_${SAMPLE} joint
 # done
 
 # TO RUN INTERACTIVE LOCALLY

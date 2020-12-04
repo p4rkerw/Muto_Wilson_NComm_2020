@@ -13,7 +13,7 @@
 # SAMPLE_ARRAY=(1 2 3 4 5)
 # for SAMPLE in ${SAMPLE_ARRAY[*]}
 # do
-# bsub -G compute-parkerw -R 'rusage[mem=8GB]' -q general -a 'docker(p4rkerw/gatk:latest)' bash healthy_dev/gatk/rna_allele_specific/step4b_merge_geno.sh
+# bsub -G compute-parkerw -R 'rusage[mem=8GB]' -q general -a 'docker(p4rkerw/gatk:latest)' bash $REPO/allele_specific_analysis/step4b_merge_geno.sh
 # done
 
 # TO RUN INTERACTIVE LOCALLY

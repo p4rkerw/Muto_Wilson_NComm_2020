@@ -10,9 +10,9 @@
 # $STORAGE1/project/analysis/control/wasp_snRNA_joint_premrna:$HOME/allele_spec \
 # $SCRATCH1:$SCRATCH1"
 # bsub -G compute-parkerw -R 'rusage[mem=128GB]' -J "asep_premrna_DCTPC" -q general -o asep_premrna_DCTPC.out -a 'docker(p4rkerw/asep:latest)' \
-# Rscript healthy_dev/gatk/rna_allele_specific/step7_asep_analyze.R DCTPC premrna 3
+# Rscript $REPO/allele_specific_analysis/step7_asep_analyze.R DCTPC premrna 3
 # bsub -G compute-parkerw -R 'rusage[mem=128GB]' -J "asep_mrna_DCTPC" -q general -o asep_mrna_DCTPC.out -a 'docker(p4rkerw/asep:latest)' \
-# Rscript healthy_dev/gatk/rna_allele_specific/step7_asep_analyze.R DCTPC mrna 3
+# Rscript $REPO/allele_specific_analysis/step7_asep_analyze.R DCTPC mrna 3
 
 
 # RUN LOCAL INTERACTIVE:

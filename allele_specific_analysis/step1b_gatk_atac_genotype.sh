@@ -16,7 +16,7 @@
 # $STORAGE1/reference/refdata-cellranger-atac-GRCh38-1.2.0/fasta:$HOME/ref \
 # $STORAGE1/reference/gatk:$HOME/gatk_bundle \
 # $SCRATCH1:$SCRATCH1"
-# bsub -G compute-parkerw -R 'rusage[mem=32GB]' -q general -a 'docker(broadinstitute/gatk:4.1.8.1)' -o gatk2.out bash healthy_dev/gatk/step1_gatk_genotype.sh Control_2
+# bsub -G compute-parkerw -R 'rusage[mem=32GB]' -q general -a 'docker(broadinstitute/gatk:4.1.8.1)' -o gatk2.out bash $REPO/allele_specific_analysis/step1_gatk_genotype.sh Control_2
 
 # prepare a fasta dict file using the cellranger-atac ref
 # gatk CreateSequenceDictionary -R /ref/genome.fa
