@@ -3,9 +3,10 @@ Integration of paired snRNAseq and snATACseq from 5 healthy adult kidney cortex 
 
 Welcome to our github repository!  
 Here you will find analysis scripts for our manuscript deposited in bioRxiv     
-https://www.biorxiv.org/content/10.1101/2020.06.14.151167v1
+https://www.biorxiv.org/content/10.1101/2020.06.14.151167v1  
 
-Please contact the co-first authors or corresponding author with questions or comments  
+Please contact the co-first authors or corresponding author with questions or comments and visit the Humphrey's lab website at www.humphreyslab.com  
+  
 Thank you,  
 Parker and Yoshi
 
