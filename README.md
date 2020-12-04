@@ -1,13 +1,15 @@
-# Muto_Wilson_bioRxiv_2020  
-**Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney**    
-*Yoshiharu Muto, *Parker C. Wilson, Haojia Wu, Sushrut S. Waikar, Benjamin D. Humphreys  
+# **Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney**
+__*Yoshiharu Muto, *Parker C. Wilson, Haojia Wu, Sushrut S. Waikar, Benjamin D. Humphreys__  
 *These authors contributed equally  
 doi: https://doi.org/10.1101/2020.06.14.151167  
 
 
-Welcome to our github repository!  
-Here you will find analysis scripts for our manuscript deposited in bioRxiv where we integrate paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples. Please contact the co-first authors or corresponding author with questions or comments.  
+Welcome to our GitHub repository!  
+Here you will find analysis scripts for our manuscript deposited in bioRxiv where we integrate paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples. Please contact the corresponding author with questions or comments.  
 <br/>
+Thanks,  
+Parker and Yoshi
+<br/><br/>
 ![alt text](http://humphreyslab.com/wp-content/uploads/2015/12/favicon-H.jpg)  
 Visit the Humphrey's lab website:   
 www.humphreyslab.com  
@@ -21,12 +23,11 @@ Find us on Twitter:
   <a href="https://twitter.com/YoshiharuMuto?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false"> @YoshiharuMuto</a>
   <a href="https://twitter.com/HumphreysLab?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false"> @HumphreysLab</a>
 <br/><br/>
-Find us on dockerHub:  
+Find us on Docker Hub:  
 [p4rkerw@dockerhub](https://hub.docker.com/search?q=p4rkerw&type=image)
 <br/>
 
-Thanks,  
-Parker and Yoshi
+
 
 **Sample analysis and processing workflow**  
 1. Generate a custom pre-mRNA index for cellranger (snRNA_prep)  
