@@ -1,4 +1,6 @@
-# Muto_Wilson_bioRxiv_2020
+# Muto_Wilson_bioRxiv_2020  
+Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney  
+
 Integration of paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples
 
 Welcome to our github repository!  
