@@ -1,5 +1,5 @@
-# this script will compare the cicero CCAN for each cell type to see which overlap with interactions
-# in the GeneHancer database within 50kb of the top DAR
+# this script will compare the cicero CCAN for each cell type identify overlapping interactions
+# in the GeneHancer database within 50kb of DAR
 
 library(data.table)
 library(dplyr)
@@ -150,3 +150,29 @@ boxplot(t(prop.overlap.df),
         xlab="Cicero Coaccess Threshold",
         ylab="Mean Proportion of Cicero Connections in GeneHancer",
         col="red")
+
+# remove the estimates for cicero coaccess threshold > 0.5
+# the plot indicates that this is a plateau
+boxplot(t(prop.overlap.df[1:5,]),
+        xlab="Cicero Coaccess Threshold",
+        ylab="Mean Proportion of Cicero Connections in GeneHancer",
+        col="red",
+        ylim=c(0,1))
+
+# calculate a fisher exact for number of overlaps in coaccess < 0.1 vs > 0.5
+num.overlap.gh_de <-  lapply(seq(list.overlap), function(x) {
+  df <- dplyr::select(list.overlap[[x]], "cicero_in_gh_de")
+}) %>%
+  bind_cols()
+colnames(num.overlap.gh_de) <- list.clusterID
+rownames(num.overlap.gh_de) <- list(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)
+
+total.num.cicero <-  lapply(seq(list.overlap), function(x) {
+  df <- dplyr::select(list.overlap[[x]], "total_cicero_conns")
+}) %>%
+  bind_cols()
+colnames(total.num.cicero) <- list.clusterID
+rownames(total.num.cicero) <- list(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8)
+
+
+

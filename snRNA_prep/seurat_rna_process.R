@@ -1,4 +1,4 @@
-# this script will eliminate doublets from an aggregated snRNA object prior to preprocessing
+# this script will eliminate doublets from an aggregated snRNA object prior to preprocessing an aggregated snRNA dataset
 library(Seurat) # 3.02
 library(ggplot2)
 library(harmony) # 1.0

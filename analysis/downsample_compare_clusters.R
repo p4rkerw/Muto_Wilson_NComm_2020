@@ -8,6 +8,8 @@ library(tibble)
 library(harmony)
 library(Signac)
 library(matrixStats)
+library(reticulate)
+use_python(python = "~/Anaconda3/bin/python", required = TRUE)
 
 rnaAggr <- readRDS(here("cellranger_rna_prep","rnaAggr_control.rds"))
 num_rna <- table(rnaAggr@meta.data$orig.ident) %>% as.data.frame()
@@ -48,6 +50,10 @@ atacSub <- FindNeighbors(object = atacSub, reduction = 'harmony', dims = 1:29, a
 atacSub <- FindClusters(object = atacSub, verbose = FALSE, reduction = 'harmony', assay.use = "peaks")
 DimPlot(atacSub)
 
+num_atac_sub <- table(atacSub@meta.data$orig.ident) %>% as.data.frame()
+
+# the number of atac cells is greater in each donor 
+merge <- data.frame(rna=num_rna$Freq, atac=num_atac_sub$Freq, donor = num_atac_sub$Var1)
 
 # compare distribution of cells
 atac_dist <- table(atacAggr@meta.data$orig.ident, atacAggr@meta.data$celltype)

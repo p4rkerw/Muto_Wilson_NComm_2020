@@ -27,18 +27,49 @@ tal <- FindClusters(tal, verbose = TRUE, resolution = 0.2, reduction = "harmony"
 tal <- RunUMAP(tal, dims = 1:20, verbose = TRUE, reduction = "harmony")
 
 #Annotation of TAL cells
-new.cluster.ids <- c("TAL1","TAL2","ATL")
+new.cluster.ids <- c("mTAL","cTAL","ATL")
 names(new.cluster.ids) <- levels(tal)
 tal <- RenameIdents(tal, new.cluster.ids)
 tal@meta.data$subtype <- tal@active.ident
 
+levels(tal) <- c("cTAL","mTAL","ATL")
 Fig5a <- DimPlot(tal, reduction = "umap", pt.size = 1) + NoLegend() #610x575
 
 levels(tal) <- rev(new.cluster.ids)
-features <- c("SLC12A1","UMOD","CLDN10-AS1","CALCR","CLDN10","CLDN16","CASR","WNK1","JAG1","S100A2","TMPRSS4","S100A6","GADD45B","CRYAB","AKR1B1")
-Fig5b_1 <- DotPlot(tal, features = rev(features)) + RotatedAxis()#792x575
 
-Fig5b_2 <- FeaturePlot(tal,features = c("CLDN10","CLDN16","S100A2","UMOD"),order=T)  #680x575
+levels(tal) <- c("ATL","mTAL","cTAL")
+levels(rnaAggr) <- rev(levels(rnaAggr))
+
+feature_cldn <- c("CLDN1","CLDN2","CLDN3","CLDN4","CLDN5","CLDN7","CLDN8","CLDN9","CLDN10","CLDN12","CLDN14","CLDN15","CLDN16","CLDN18","CLDN19","CLDN20","CLDN23","CLDN34","CLDN10-AS1")
+DotPlot(tal, features = rev(feature_cldn)) + RotatedAxis()#775x500
+DotPlot(rnaAggr, features = rev(feature_cldn)) + RotatedAxis()#775x600
+
+features <- c("SLC12A1","UMOD","CLDN16","KCNJ10","PTH1R","CLCNKB","CALCR","CLDN10","CLCNKA","CLDN10-AS1","S100A2","S100A6","GADD45B","CRYAB","AKR1B1")
+Fig5b <- DotPlot(tal, features = rev(features)) + RotatedAxis()#775x600
+
+Fig5c <- FeaturePlot(tal,features = c("CLDN10-AS1","TMEM207","S100A2","UMOD"),order=T)  #680x575
+
+# Integration of subclustering
+ident_t <- rnaAggr@active.ident
+ident_t[ident_t=="TAL"] <- NA
+ident_t <- ident_t[!is.na(ident_t)]
+ident_f <- tal@active.ident
+mat_t <- as.data.frame(ident_t)
+mat_f <- as.data.frame(ident_f)
+colnames(mat_t) <- "subtype"
+colnames(mat_f) <- "subtype"
+mat_n <- rbind(mat_t,mat_f)
+rnaAggr <- AddMetaData(object=rnaAggr, mat_n)
+Idents(rnaAggr) <- "subtype"
+DimPlot(rnaAggr, reduction = "umap", label = TRUE, pt.size = 0.1, label.size=3) + NoLegend()
+marker_tal1 <- FindMarkers(rnaAggr,ident.1 = "TAL1",only.pos = T)
+#THSD4,SGIP,SCHLAP1,NTRK2(heterogeneous?),ACPP,RIMS2,PAPPA2,CXCL12,PKNOX2(heterogeneous?),CABP1
+marker_tal2 <- FindMarkers(rnaAggr,ident.1 = "TAL2",only.pos = T)
+marker_atl <- FindMarkers(rnaAggr,ident.1 = "ATL",only.pos = T)
+
+
+
+
 
 #==================ATAC-seq=========================================
 library(Signac)
@@ -56,19 +87,20 @@ tal_atac   <- FindNeighbors(object = tal_atac , reduction = 'harmony', dims = 1:
 tal_atac   <- FindClusters(object = tal_atac , verbose = FALSE, resolution = 0.1)
 
 #Annotation of TAL cells
-new.cluster.ids <- c("TAL1","TAL2","ATL")
+new.cluster.ids <- c("mTAL","cTAL","ATL")
 names(new.cluster.ids) <- levels(tal_atac)
 tal_atac <- RenameIdents(tal_atac, new.cluster.ids)
 tal_atac@meta.data$subtype <- tal_atac@active.ident
 
+levels(tal_atac) <- c("cTAL","mTAL","ATL")
 fig5e <- DimPlot(tal_atac, pt.size = 1)+NoLegend()  #610x575
 
 DefaultAssay(tal_atac) <- "RNA"
 fig5f_1 <- FeaturePlot(tal_atac,features = c("CLDN10","CLDN16","S100A2","UMOD"),cols =jdb_palette("Zissou"))
 
-levels(tal_atac) <- rev(levels(tal_atac))
+levels(tal_atac) <- c("ATL","mTAL","cTAL")
 features <- c("SLC12A1","UMOD","CLDN10-AS1","CALCR","CLDN10","CLDN16","CASR","WNK1","JAG1","S100A2","TMPRSS4","S100A6","GADD45B","CRYAB","AKR1B1")
-fig.5f_2 <- DotPlot(tal_atac, features = rev(features)) + RotatedAxis()#792x575
+fig.5f_2 <- DotPlot(tal_atac, features = rev(features)) + RotatedAxis()#770x560
 
 #Motif enrichment analysis on chromvar between TAL1 vs TAL2
 DefaultAssay(tal_atac) <- "chromvar"
@@ -103,5 +135,27 @@ fig.5h_1 <- ggbarplot(head(enriched.motifs_TAL1), x = "motif.name", y = "logp",
 fig.5h_2 <- ggbarplot(head(enriched.motifs_TAL2), x = "motif.name", y = "logp",
                     orientation = "horizontal",order=rev(head(enriched.motifs_TAL2)$motif.name),
                     fill = "motif.name", palette = c("#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f","#fb6f6f")) #551x575
+
+# Integration of subclustering
+ident_t <- sub_atac@active.ident
+ident_t[ident_t=="TAL"] <- NA
+ident_t <- ident_t[!is.na(ident_t)]
+ident_f <- tal_atac@active.ident
+mat_t <- as.data.frame(ident_t)
+mat_f <- as.data.frame(ident_f)
+colnames(mat_t) <- "subtype"
+colnames(mat_f) <- "subtype"
+mat_n <- rbind(mat_t,mat_f)
+sub_atac <- AddMetaData(object=sub_atac, mat_n)
+Idents(sub_atac) <- "subtype"
+DimPlot(sub_atac, reduction = "umap", label = TRUE, pt.size = 0.1, label.size=3) + NoLegend()
+marker_tal1 <- FindMarkers(sub_atac,ident.1 = "TAL1",only.pos = T)
+#THSD4,SGIP,SCHLAP1,NTRK2(heterogeneous?),ACPP,RIMS2,PAPPA2,CXCL12,PKNOX2(heterogeneous?),CABP1
+marker_tal2 <- FindMarkers(sub_atac,ident.1 = "TAL2",only.pos = T)
+marker_atl <- FindMarkers(sub_atac,ident.1 = "ATL",only.pos = T)
+
+tal_aver <- AverageExpression(tal)
+write.csv(tal_aver[["SCT"]],"~/Desktop/tal_aver.csv")
+
 
 

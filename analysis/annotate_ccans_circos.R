@@ -1,5 +1,5 @@
 # this script will annotate cicero ccan with the ChIPSeeker database to determine what genomic
-# regions are linked by the connections
+# regions are linked by the connections and create circos plots
 
 library(ChIPseeker)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
@@ -12,10 +12,9 @@ library(Signac)
 library(stringr)
 library(RColorBrewer)
 
-# read in cell-type-specific CCAN and filter by coaccess threshold > 0.1
-dar_files <- list.files("analysis_control/ccans", pattern = "ciceroConns")
-dar_file_paths <- paste0("analysis_control/ccans/", dar_files)
-list.dar <- lapply(dar_file_paths, function(file_path) {
+# read in cell-type-specific CCAN and filter by coaccess threshold > 0.2
+dar_files <- list.files("analysis_control/ccans/monocle2", recursive = TRUE, pattern = "ciceroConns", full.names = TRUE)
+list.dar <- lapply(dar_files, function(file_path) {
   fread(file_path) %>%
     dplyr::filter(coaccess > 0.2) %>%
     dplyr::select(Peak1, Peak2)
@@ -71,7 +70,7 @@ list.peaks.loc.df <- lapply(seq(idents), function(x) {
 names(list.peaks.loc.df) <- idents
 
 
-
+# generate circos plots of predicted chromatin-chromatin interactions and save to plots directory
 Plot_Cicero_Anno <- function(ident, list.peaks.loc.df) {
   clusterID <- ident
   toplot <- as.data.frame(list.peaks.loc.df[[ident]])

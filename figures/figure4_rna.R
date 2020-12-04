@@ -33,7 +33,7 @@ cds = reduce_dimension(cds,preprocess_method = "Aligned")
 
 #subclustering
 cds_subset <- choose_cells(cds) #subseting PT for later analysis: before adding pseudotime
-cds_subset <- cds_subset[,colData(cds_subset)$celltype %in% c("PT","PT_KIM1")]
+cds_subset <- cds_subset[,colData(cds_subset)$celltype %in% c("PT","PT_VCAM1")]
 cds_subset <- cluster_cells(cds_subset)
 cds_subset <- learn_graph(cds_subset,close_loop = FALSE)
 cds_subset <- order_cells(cds_subset)

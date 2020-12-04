@@ -1,3 +1,5 @@
+# this script will correlate chromVAR transcription factor activity with TF expression
+
 library(Seurat)
 library(Signac) # 0.2.5
 library(Seurat) # 3.1.5
@@ -158,10 +160,45 @@ total_pairs <- unique(df.final$gene_motif)
 # identify TF that are positively (or negatively) correlated with their chromvar activity
 df.pos <- dplyr::filter(df.sig, corr > 0)
 sig_pos <- unique(df.pos$gene_motif)
+pearson <- cor.test(df.pos$chromvar, df.pos$rna, method="pearson", conf.level=0.95)
+max_chrom <- max(abs(df.pos$max_chrom)) + 1
+max_exp <- max(abs(df.pos$max_exp)) + 1
+
+p1 <- ggplot(df.pos, aes(x=chromvar, y=rna)) +
+  geom_smooth(method="lm", color = "darkgray") +
+  geom_point(aes(color=celltype)) +
+  xlab("chromVAR activity (avg_logFC)") +
+  ylab("Gene expression (avg_logFC)") +
+  ggtitle("Positive correlation gene-motif combos for all celltypes", 
+          subtitle=paste0("Pearson r^2=",signif(pearson$estimate,2)," pval=",signif(pearson$p.val,2))) +
+  xlim(c(-max_chrom,max_chrom)) +
+  ylim(c(-max_exp,max_exp)) +
+  theme_minimal() +
+  geom_hline(yintercept=0) +
+  geom_vline(xintercept=0) 
+p1
+
+
 
 df.neg <- dplyr::filter(df.sig, corr < 0)
-df.neg <- dplyr::arrange(df.neg, -num_celltypes)
 sig_neg <- unique(df.neg$gene_motif)
+pearson <- cor.test(df.neg$chromvar, df.neg$rna, method="pearson", conf.level=0.95)
+max_chrom <- max(abs(df.neg$max_chrom)) + 1
+max_exp <- max(abs(df.neg$max_exp)) + 1
+
+p2 <- ggplot(df.neg, aes(x=chromvar, y=rna)) +
+  geom_smooth(method="lm", color = "darkgray") +
+  geom_point(aes(color=celltype)) +
+  xlab("chromVAR activity (avg_logFC)") +
+  ylab("Gene expression (avg_logFC)") +
+  ggtitle("Negative correlation gene-motif combos for all celltypes", 
+          subtitle=paste0("Pearson r^2=",signif(pearson$estimate,2)," pval=",signif(pearson$p.val,2))) +
+  xlim(c(-max_chrom,max_chrom)) +
+  ylim(c(-max_exp,max_exp)) +
+  theme_minimal() +
+  geom_hline(yintercept=0) +
+  geom_vline(xintercept=0) 
+p2
 
 
 toplot <- dplyr::filter(df.final, gene_motif == "ZEB1_MA0103.3")
@@ -180,48 +217,4 @@ p1 <- ggplot(toplot, aes(x=chromvar, y=rna)) +
   geom_hline(yintercept=0) +
   geom_vline(xintercept=0) 
 p1
-
-
-
-# # get the chromvar activity table for the first motif
-# chromvar_act <- data.frame(chromvar[1,])
-# 
-# # get the imputed gene expression values for the corresponding TF
-# name = "HNF1A"
-# motif_name <- motif_names[motif_names$motif == gene, ]
-# imprna <- atacAggr[["IMPRNA"]]
-# 
-# imp_motif <- t(data.frame(imprna[motif_name]))
-# 
-# # create a matrix to plot chromvar activity vs. imputed TF expression
-# mat <- data.frame(chromvar=chromvar_act[,1], imprna=imp_motif[,1], celltype=celltype)
-# 
-# ggplot(mat, aes(x=chromvar, y=imprna, color=celltype)) + geom_point()
-
-# calculate average chromvar activity for a given TF across all celltypes
-# gene <- "NR3C2"
-# 
-# Idents(atacAggr) <- "highres.predicted.id"
-# atacAggr <- RenameIdents(atacAggr, "PT_KIM1" = "PT_VCAM1")
-# feature <- motif_names[motif_names$gene == gene,]$motif
-# aver_chromvar <- AverageExpression(atacAggr, assays="chromvar", features=feature)
-# df_chromvar <- data.frame(unlist(aver_chromvar))
-# 
-# # calculate average imputed gene expression for a given TF across all celltypes
-# aver_imprna <- AverageExpression(atacAggr, assays="IMPRNA", features=gene)
-# df_imprna <-  data.frame(unlist(aver_imprna))
-# 
-# # compute the average expression from the rna object
-# aver_exp <- AverageExpression(rnaAggr, assays="RNA", features=gene)
-# df_averexp <- data.frame(unlist(aver_exp))
-# 
-# mat <- data.frame(celltype = levels(atacAggr), 
-#                   chromvar=df_chromvar$unlist.aver_chromvar.,
-#                   rna=df_averexp$unlist.aver_exp.)
-# 
-# 
-# ggplot(mat, aes(x=chromvar, y=rna, color=celltype)) +
-#   geom_point() +
-#   ggtitle(gene)
-
 

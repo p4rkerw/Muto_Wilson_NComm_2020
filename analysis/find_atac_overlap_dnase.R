@@ -7,9 +7,6 @@ library(stringr)
 library(plyranges)
 library(openxlsx)
 library(dplyr)
-library(tibble)
-library(ggplot2)
-library(here)
 
 # function for identifying peaks within a given cell type and filtering for the proportion of cells containing the peak
 Find_CR_Celltype_Peaks <- function(celltype, pct.ref.cells, seurat_agg) {
@@ -76,38 +73,33 @@ GetOverlaps <- function(query.gr, ref.gr, pct.overlap) {
 ##########################################################################
 
 glom_dna_bedFiles <- 
-  c("comparison_human_datasets/sieber_PMID30760496/GSM3196013_DS35973-LN30328-AG6995-peaks.bed",
-    "comparison_human_datasets/sieber_PMID30760496/GSM3196014_DS39386-LN32272-AG3852-peaks.bed",
-    "comparison_human_datasets/sieber_PMID30760496/GSM3196015_DS40507-LN33574-AG7000-peaks.bed",
-    "comparison_human_datasets/sieber_PMID30760496/GSM3196016_DS41157-LN33957-AG7003-peaks.bed")
+  c("comparison_human_datasets/sieber_PMID30760496/GSM3196013_DS35973-LN30328-AG6995-peaks.bed.gz",
+    "comparison_human_datasets/sieber_PMID30760496/GSM3196014_DS39386-LN32272-AG3852-peaks.bed.gz",
+    "comparison_human_datasets/sieber_PMID30760496/GSM3196015_DS40507-LN33574-AG7000-peaks.bed.gz",
+    "comparison_human_datasets/sieber_PMID30760496/GSM3196016_DS41157-LN33957-AG7003-peaks.bed.gz")
 
 tubule_dna_bedFiles <- 
-  c("comparison_human_datasets/sieber_PMID30760496/GSM3196017_DS27824-LN29654-AG3899-peaks.bed",
-    "comparison_human_datasets/sieber_PMID30760496/GSM3196018_DS37969-LN31356-AG6997-peaks.bed",
-    "comparison_human_datasets/sieber_PMID30760496/GSM3196019_DS41396-LN34037-AG7005-peaks.bed")
+  c("comparison_human_datasets/sieber_PMID30760496/GSM3196017_DS27824-LN29654-AG3899-peaks.bed.gz",
+    "comparison_human_datasets/sieber_PMID30760496/GSM3196018_DS37969-LN31356-AG6997-peaks.bed.gz",
+    "comparison_human_datasets/sieber_PMID30760496/GSM3196019_DS41396-LN34037-AG7005-peaks.bed.gz")
 
-all_dna_bedFiles <- c(glom_dna_bedFiles,tubule_dna_bedFiles)
-
-#podo_dna_bedFiles <- 
-#c("comparison_human_datasets/sieber_PMID30760496/GSM3196020_DS26685-LN26974-AG6994-peaks.bed.gz",
-#"comparison_human_datasets/sieber_PMID30760496/GSM3196021_DS26687-LN34624-AG6216-peaks.bed.gz")
+podo_dna_bedFiles <- 
+  c("comparison_human_datasets/sieber_PMID30760496/GSM3196020_DS26685-LN26974-AG6994-peaks.bed.gz",
+    "comparison_human_datasets/sieber_PMID30760496/GSM3196021_DS26687-LN34624-AG6216-peaks.bed.gz")
 
 # read in the aggregated snATAC-seq object
 atacAggr <- readRDS("cellranger_atac_prep/atacAggr_sub97_control.rds")
-atacAggr.bed <- read.table("outs_atac/peaks.bed")
+atacAggr.bed <- read.table("cellranger_atac_aggr_control/outs/peaks.bed")
 darFile <- "analysis_control/dar.celltype.control.xlsx"
 
 # prepare references
 glom_DHS.gr <- PrepareDHSGRanges(glom_dna_bedFiles)
 tubule_DHS.gr <- PrepareDHSGRanges(tubule_dna_bedFiles)
-all_DHS.gr <- PrepareDHSGRanges(all_dna_bedFiles)
-
-#podo_DHS.gr <- PrepareDHSGRanges(podo_dna_bedFiles)
-list.DHS.gr <- list(glom_DHS.gr,tubule_DHS.gr,all_DHS.gr)
-names(list.DHS.gr) <- c("glom","tubule","all")
+podo_DHS.gr <- PrepareDHSGRanges(podo_dna_bedFiles)
+list.DHS.gr <- list(glom_DHS.gr,tubule_DHS.gr, podo_DHS.gr)
+names(list.DHS.gr) <- c("glom","tubule","podo")
 
 # find the cellranger peaks and DAR to compare to the DHS
-defaultAssay(atacAggr) <- "peaks"
 idents <- levels(atacAggr)
 pct.ref.cells <- 0.01
 cr.gr <- Find_CR_Peaks(seurat_agg=atacAggr, pct.ref.cells = pct.ref.cells)
@@ -140,26 +132,17 @@ prop.overlap.df <-  lapply(seq(list.cr_in_DHS_by_threshold), function(x) {
 colnames(prop.overlap.df) <- thresholds
 rownames(prop.overlap.df) <- names(list.DHS.gr)
 
-# plot all the row
+# only plot the glom and tubule rows
 library(reshape)
-toplot <- prop.overlap.df %>%
+toplot <- prop.overlap.df[-3,] %>%
   t() %>%
   as.data.frame() %>%
   rownames_to_column(var="threshold") %>%
   melt("threshold")
+
 ggplot(toplot, aes(x=threshold, y=value, fill=variable)) +
   geom_bar(stat="identity", position="dodge") +
   xlab("Threshold for Proportion of Cells with Cellranger Peak") +
   ylab("Proportion of Cellranger Peaks Overlapping with DHS Sites")
 
-# only plot "all"
-toplot <- prop.overlap.df[3,] %>%
-  t() %>%
-  as.data.frame() %>%
-  rownames_to_column(var="threshold") %>%
-  melt("threshold")
-ggplot(toplot, aes(x=threshold, y=value, fill=variable)) +
-  geom_bar(stat="identity", position="dodge") +
-  xlab("Threshold for Proportion of Cells with Cellranger Peak") +
-  ylab("Proportion of Cellranger Peaks Overlapping with DHS Sites")
 

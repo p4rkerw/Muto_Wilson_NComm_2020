@@ -7,7 +7,7 @@ library(EnsDb.Hsapiens.v86)
 library(here)
 set.seed(1234)
 
-#Use the object with all version of jasper motifs
+#Use the object with all version of jaspar motifs
 sub_atac <- readRDS("cellranger_atac_prep/atacAggr_sub97_control_allT.rds")
 DefaultAssay(sub_atac) <- "peaks"
 count_data <- GetAssayData(sub_atac, slot = "counts")

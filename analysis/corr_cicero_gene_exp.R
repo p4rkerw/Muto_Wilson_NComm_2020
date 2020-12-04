@@ -1,3 +1,5 @@
+# this script will correlate cicero gene activity with gene expression
+
 library(Signac) # 0.2.1
 library(Seurat) # 3.0.2
 library(cicero) # 1.3.4
