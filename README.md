@@ -29,5 +29,17 @@ cellranger_atac_count.sh
 6. Aggregate the five snATAC libraries using the cellranger_atac_aggr.csv file (snATAC_prep)      
 cellranger_atac_aggr.sh  
 
-7. Processs the aggregated snATAC library and integrate with the snRNA library to remove doublets with label transfer. This script will generate a processed snATAC library file atacAggr_control.rds
+7. Processs the aggregated snATAC library and integrate with the snRNA library to remove doublets with label transfer. This script will generate a processed snATAC library file atacAggr_control.rds (snATAC_prep)  
+signac_atac_process.sh  
+
+8. Identify cell-specific differentially expressed genes in the snRNA dataset (analysis)
+find_rna_deg.R  
+
+9. Identify cell-specific differentially accessible chromatin in the snATAC dataset (analysis)  
+find_atac_dar.R  
+
+10. Find differentially expressed genes with nearby differentially accessible chromatin regions (analysis)  
+find_overlap_deg_dar.R  
+
+11.
 
