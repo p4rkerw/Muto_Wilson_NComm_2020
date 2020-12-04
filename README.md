@@ -18,8 +18,8 @@ http://humphreyslab.com/SingleCell/
 Find us on Twitter: 
 <br/>
   <a href="https://twitter.com/parkercwilson?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @parkercwilson</a>
-  <a href="https://twitter.com/YoshiharuMuto?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @YoshiharuMuto</a>
-  <a href="https://twitter.com/HumphreysLab?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @HumphreysLab</a>
+  <a href="https://twitter.com/YoshiharuMuto?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false"> @YoshiharuMuto</a>
+  <a href="https://twitter.com/HumphreysLab?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false"> @HumphreysLab</a>
 
 Thanks,  
 Parker and Yoshi
