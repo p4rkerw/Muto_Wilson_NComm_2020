@@ -1,14 +1,20 @@
-# Muto_Wilson_bioRxiv_2020
-Integration of paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples
+# Muto_Wilson_bioRxiv_2020  
+Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney  
+*Yoshiharu Muto, *Parker C. Wilson, Haojia Wu, Sushrut S. Waikar, Benjamin D. Humphreys  
+*These authors contributed equally  
+doi: https://doi.org/10.1101/2020.06.14.151167  
+
 
 Welcome to our github repository!  
-Here you will find analysis scripts for our manuscript deposited in bioRxiv     
-https://www.biorxiv.org/content/10.1101/2020.06.14.151167v1  
-
+Here you will find analysis scripts for our manuscript deposited in bioRxiv where we integrate paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples  
+     
 Please contact the co-first authors or corresponding author with questions or comments and visit the Humphrey's lab website at www.humphreyslab.com  
   
 Thank you,  
 Parker and Yoshi
+
+
+
 
 Sample analysis and processing workflow
 1. Generate a custom pre-mRNA index for cellranger (snRNA_prep)  
@@ -80,6 +86,19 @@ deconvolution_liu_BisqueRNA.R
 3. TCGA non-tumor Kidney  
 find_bulk_degs_tcga.R  
 deconvolution_tcga_BisqueRNA.R  
+
+Allele Specific Analysis:  
+These scripts can be run in publicly-available docker containers found at https://hub.docker.com/ username: p4rkerw  
+Each script has an example command to run the corresponding docker container  
+
+(Follow the steps in order) 
+1. Genotype the snRNA or snATAC libraries using GATK (or obtain a vcf from another method)    
+2. Annotate the genotyped vcf with GATK Funcotator to evaluate gnomAD MAF and variant context  
+3. Process the variant annotation into a csv file  
+4. Filter the genotyped vcf for variants that overlap coding transcripts and introns  
+5. Apply the WASP pipeline to cellranger-aligned bam files and realign overlapping variants with STAR  
+6. Get allele-specific counts with GATK ASEReadCounter  
+7. Filter heterozygous SNV and perform allele-specific analysis with ASEP  
 
 Pseudotemporal ordering of the distal nephron with Monocle3:  
 pseudotime_distal_nephron.R  
