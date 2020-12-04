@@ -13,7 +13,7 @@ Visit the Humphrey's lab website:
 www.humphreyslab.com  
 <br/>
 Check out our interactive datasets with Kidney Interactive mulTiomics (KIT):  
-![alt text](http://humphreyslab.com/SingleCell/images/kitcar.jpg =20x20)
+![alt text](http://humphreyslab.com/SingleCell/images/kitcar.jpg =10x)
 http://humphreyslab.com/SingleCell/
 <br/><br/>
 Thanks,  
