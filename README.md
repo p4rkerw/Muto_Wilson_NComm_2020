@@ -15,10 +15,7 @@ www.humphreyslab.com
 Check out our interactive datasets with Kidney Interactive mulTiomics (KIT):  
 http://humphreyslab.com/SingleCell/
 <br/><br/>
-Find us on twitter:  
-@HumphreysLab  
-@parkercwilson  
-@YoshiharuMuto  
+Find us on Twitter: @HumphreysLab @parkercwilson @YoshiharuMuto  
 <br/>
 Thanks,  
 Parker and Yoshi
