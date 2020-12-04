@@ -11,7 +11,10 @@ Here you will find analysis scripts for our manuscript deposited in bioRxiv wher
 Visit the Humphrey's lab website:   
 ![alt text](http://humphreyslab.com/wp-content/uploads/2015/12/favicon-H.jpg)
 www.humphreyslab.com  
-Check out our interactive datasets with Kidney Interactive mulTiomics (KIT): http://humphreyslab.com/SingleCell/
+<br/>
+Check out our interactive datasets with Kidney Interactive mulTiomics (KIT):  
+![alt text](http://humphreyslab.com/SingleCell/images/kitcar.jpg)
+http://humphreyslab.com/SingleCell/
 <br/><br/>
 Thanks,  
 Parker and Yoshi
