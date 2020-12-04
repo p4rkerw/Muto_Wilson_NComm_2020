@@ -8,6 +8,7 @@ doi: https://doi.org/10.1101/2020.06.14.151167
 Welcome to our github repository!  
 Here you will find analysis scripts for our manuscript deposited in bioRxiv where we integrate paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples. Please contact the co-first authors or corresponding author with questions or comments.  
 <br/>
+![alt text](http://humphreyslab.com/wp-content/uploads/2015/12/favicon-H.jpg)
 Visit the Humphrey's lab website: www.humphreyslab.com  
 Check out our interactive datasets with Kidney Interactive mulTiomics (KIT): http://humphreyslab.com/SingleCell/
 <br/><br/>
