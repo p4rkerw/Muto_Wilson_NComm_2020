@@ -5,7 +5,7 @@ doi: https://doi.org/10.1101/2020.06.14.151167
 
 
 Welcome to our GitHub repository!  
-Here you will find analysis scripts for our manuscript deposited in bioRxiv where we integrate paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples. Please contact the corresponding author with questions or comments.  
+Here you will find analysis scripts for our manuscript deposited in bioRxiv where we integrate paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples. Please contact the corresponding author, Dr. Benjamin Humphreys, with questions or comments.  
 <br/>
 Thanks,  
 Parker and Yoshi
