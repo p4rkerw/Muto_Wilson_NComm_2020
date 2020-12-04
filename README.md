@@ -1,14 +1,13 @@
 # Muto_Wilson_bioRxiv_2020  
 Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney  
-Yoshiharu Muto, Parker C. Wilson, Haojia Wu, Sushrut S. Waikar, Benjamin D. Humphreys  
+*Yoshiharu Muto, *Parker C. Wilson, Haojia Wu, Sushrut S. Waikar, Benjamin D. Humphreys  
+*These authors contributed equally  
 doi: https://doi.org/10.1101/2020.06.14.151167  
 
-Integration of paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples  
 
 Welcome to our github repository!  
-Here you will find analysis scripts for our manuscript deposited in bioRxiv     
-https://www.biorxiv.org/content/10.1101/2020.06.14.151167v1  
-
+Here you will find analysis scripts for our manuscript deposited in bioRxiv where we integrate paired snRNAseq and snATACseq from 5 healthy adult kidney cortex samples  
+     
 Please contact the co-first authors or corresponding author with questions or comments and visit the Humphrey's lab website at www.humphreyslab.com  
   
 Thank you,  
