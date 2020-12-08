@@ -1,3 +1,4 @@
+# this script will generate chromVAR TF activities for seurat objects
 
 library(Seurat) # 3.0.2
 library(Signac) #version 0.2.1

@@ -6,7 +6,6 @@ library(Signac)
 library(stringr)
 library(plyranges)
 library(openxlsx)
-library(tibble)
 library(dplyr)
 
 # function for identifying peaks within a given cell type and filtering for the proportion of cells containing the peak
@@ -140,13 +139,10 @@ toplot <- prop.overlap.df[-3,] %>%
   as.data.frame() %>%
   rownames_to_column(var="threshold") %>%
   melt("threshold")
-colnames(toplot)[2] <- "Tissue"
 
-ggplot(toplot, aes(x=threshold, y=value, fill=Tissue)) +
+ggplot(toplot, aes(x=threshold, y=value, fill=variable)) +
   geom_bar(stat="identity", position="dodge") +
-  xlab("Threshold for Proportion Cells with Peak") +
-  ylab("Proportion Peaks Overlapping DHS") + 
-  theme(text=element_text(size=16))
-
+  xlab("Threshold for Proportion of Cells with Cellranger Peak") +
+  ylab("Proportion of Cellranger Peaks Overlapping with DHS Sites")
 
 

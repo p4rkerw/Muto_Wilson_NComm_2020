@@ -1,4 +1,4 @@
-# this script will identify the proportion cell type specific deg that also contain dar
+# this script will identify the proportion of cell type specific deg that also contain dar
 
 
 # identify the genes associated with a differentially accessible chromatin region
@@ -41,9 +41,9 @@ deg.total.num <- sapply(deg_idents, function(x) length(deg.genes.list[[x]]))
 
 
 # prepare the dar idents for comparison with deg
-deg_compare_idents <- c("PT","PT","PT_KIM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB","PODO","ENDO","MES",
+deg_compare_idents <- c("PT","PT","PT_VCAM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB","PODO","ENDO","MES",
                         "FIB","LEUK")
-dar_compare_idents <- c("PCT","PST","PT_KIM1","PEC","TAL","DCT","DCT","CNT","PC","ICA","ICB","PODO","ENDO","MES_FIB",
+dar_compare_idents <- c("PCT","PST","PT_VCAM1","PEC","TAL","DCT","DCT","CNT","PC","ICA","ICB","PODO","ENDO","MES_FIB",
                         "MES_FIB","LEUK")
 
 # calculate number of genes with a deg and a unique dar for each celltype defined by deg
