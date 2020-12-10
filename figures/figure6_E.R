@@ -37,15 +37,15 @@ bulk_eset@phenoData@data$group <- factor(bulk_eset@phenoData@data$group,
 toplot <- bulk_eset@phenoData@data %>%
   dplyr::select(group, c(PT,PT_VCAM1,LEUK))
 #330x480
-fig5d_1 <- ggboxplot(toplot, x = "group", y = "PT_VCAM1",
+fig6e_1 <- ggboxplot(toplot, x = "group", y = "PT_VCAM1",
           add = "jitter",ylim = c(0, 0.1),
           fill = "group", palette = c("#A3CDE5","#E8BD72","#D9A1F3"))+NoLegend() 
 
-fig5d_2 <- ggboxplot(toplot, x = "group", y = "PT",
+fig6e_2 <- ggboxplot(toplot, x = "group", y = "PT",
                    add = "jitter",ylim = c(0, 0.4),
                    fill = "group", palette = c("#A3CDE5","#E8BD72","#D9A1F3"))+NoLegend() 
 
-fig5d_3 <- ggboxplot(toplot, x = "group", y = "LEUK",
+fig6e_3 <- ggboxplot(toplot, x = "group", y = "LEUK",
                    add = "jitter",ylim = c(0, 0.075),
                    fill = "group", palette = c("#A3CDE5","#E8BD72","#D9A1F3"))+NoLegend() 
 

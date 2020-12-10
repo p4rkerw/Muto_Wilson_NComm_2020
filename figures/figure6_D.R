@@ -36,15 +36,13 @@ toplot <- bulk_eset@phenoData@data %>%
 
 toplot$TCGA <- "TCGA"
 
-p2 <- ggplot(toplot, aes(y=PT_VCAM1, fill=TCGA)) + 
-  geom_boxplot() + 
-  xlab("Patient Age Range") +
-  ylab("Proportion of PT_VCAM1 Cells") +
-  ggtitle("Proportion of PT_VCAM1 Cells by Patient Age Range TCGA-KIRC")
-
-
-fig5d <- ggboxplot(toplot, x = "TCGA", y = "PT_VCAM1",
+fig6d_1 <- ggboxplot(toplot, x = "TCGA", y = "PT_VCAM1",
                    add = "jitter",ylim = c(0, 0.2),
 fill = "TCGA",palette = "#A3CDE5")+NoLegend() 
 
-
+toplot <- bulk_eset@phenoData@data
+toplot <- toplot[7:ncol(toplot)]
+toplot <- melt(toplot)
+fig6d_2 <- ggboxplot(toplot, x = "variable", y = "value",
+add = "jitter",ylim = c(0, 0.5),
+fill = "variable", palette = c("#CCDFE7","#C2318E","#CCDFE7",jdb_palette("brewer_marine")))+NoLegend() 
