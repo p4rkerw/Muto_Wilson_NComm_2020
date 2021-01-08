@@ -13,7 +13,7 @@ rnaAggr <- readRDS("cellranger_rna_prep/rnaAggr_control.rds")
 #Sub-clustering
 tal <- subset(rnaAggr, ident = "TAL")
 tal<- FindNeighbors(tal, dims = 1:25, verbose = TRUE, reduction = "harmony")
-tal <- FindClusters(tal, verbose = TRUE, resolution = 0.2, reduction = "harmony")
+tal <- FindClusters(tal, verbose = TRUE, resolution = 0.2, reduction = "harmony",graph.name = "RNA_snn")
 tal <- RunUMAP(tal, dims = 1:25, verbose = TRUE, reduction = "harmony")
 DimPlot(tal, reduction = "umap", label = TRUE, pt.size = 1) + NoLegend()
 
@@ -27,12 +27,14 @@ tal <- FindClusters(tal, verbose = TRUE, resolution = 0.2, reduction = "harmony"
 tal <- RunUMAP(tal, dims = 1:20, verbose = TRUE, reduction = "harmony")
 
 #Annotation of TAL cells
-new.cluster.ids <- c("mTAL","cTAL","ATL")
+new.cluster.ids <- c("TAL1","TAL2","ATL")
 names(new.cluster.ids) <- levels(tal)
 tal <- RenameIdents(tal, new.cluster.ids)
 tal@meta.data$subtype <- tal@active.ident
 
-levels(tal) <- c("cTAL","mTAL","ATL")
+levels(tal) <- c("TAL1","TAL2","ATL")
+#saveRDS(tal,"cellranger_rna_prep/tal.rds")
+
 Fig5a <- DimPlot(tal, reduction = "umap", pt.size = 1) + NoLegend() #610x575
 
 levels(tal) <- rev(new.cluster.ids)
@@ -157,5 +159,9 @@ marker_atl <- FindMarkers(sub_atac,ident.1 = "ATL",only.pos = T)
 tal_aver <- AverageExpression(tal)
 write.csv(tal_aver[["SCT"]],"~/Desktop/tal_aver.csv")
 
+########################################
+
+FeaturePlot(tal,"KCNJ10",reduction = "umap",pt.size = 1) #556x492
+FeaturePlot(tal,"PTH1R",reduction = "umap",pt.size = 1)
 
 
