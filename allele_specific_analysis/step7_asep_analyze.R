@@ -30,6 +30,7 @@
 # --rm -it p4rkerw/asep:latest
 
 # RUN LOCAL INTERACTIVE RSTUDIO VIA CHROME localhost:8787
+# username: rstudio
 # docker run \
 # -v $HOME:$HOME \
 # -v /g/project:/home/rstudio/ \
