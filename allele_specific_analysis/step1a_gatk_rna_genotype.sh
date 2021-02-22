@@ -34,7 +34,7 @@
 # -v g/reference/gatk:$HOME/gatk_bundle \
 # -v $SCRATCH1:$SCRATCH1 \
 # -e SCRATCH1="/g/scratch" \
-# -it p4rkerw/gatk:4.1.8.1
+# --rm -it p4rkerw/gatk:4.1.8.1
 
 # make sure that miniconda is in the path
 export PATH=$PATH:/gatk:/opt/miniconda/envs/gatk/bin:/gatk:/opt/miniconda/envs/gatk/bin:/opt/miniconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -62,7 +62,7 @@ gatk MarkDuplicates \
       --CREATE_INDEX true
 
 # limit to specified intervals
-# this will speed up analysis be eliminating alt contigs
+# this will speed up analysis by eliminating alt contigs
 CONTIGS=(chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY)      
 printf '%s\n' "${CONTIGS[@]}" > /tmp/interval.list
 
@@ -93,18 +93,37 @@ gatk ApplyBQSR \
 
 # single sample gvcf variant calling 
 # annotate the sites with dbsnp
-gatk HaplotypeCaller  \
-   -R ref/genome.fa \
-   -I $outdir/bqsr.bam \
-   -O $outdir/output.g.vcf.gz \
-   -ERC GVCF \
-   -D gatk_bundle/resources_broad_hg38_v0_Homo_sapiens_assembly38.dbsnp138.vcf
+PROCESSES=4  # Number of threads you want
+for INTERVAL in ${CONTIGS[*]}; do
+echo $INTERVAL
+   gatk HaplotypeCaller  \
+      -R ref/genome.fa \
+      -I $outdir/bqsr.bam \
+      -O $outdir/output.g.$INTERVAL.vcf.gz \
+      -ERC GVCF \
+      -D gatk_bundle/resources_broad_hg38_v0_Homo_sapiens_assembly38.dbsnp138.vcf \
+      -L $INTERVAL \
+      --verbosity ERROR &
+      while (( $(jobs |wc -l) >= (( ${PROCESSES} + 1 )) )); do
+         sleep 0.1
+      done
+done
+
+# merge vcfs from parallel haplotypecaller 
+(ls $outdir/output.g.chr*.vcf.gz) > /tmp/vcf.list
+gatk GatherVcfs \
+   -I /tmp/vcf.list \
+   -O $outdir/output.g.vcf.gz 
+
+# index merged vcf
+gatk IndexFeatureFile \
+   -I $outdir/output.g.vcf.gz 
 
 # single sample genotyping
 gatk GenotypeGVCFs \
    -R ref/genome.fa \
    -V $outdir/output.g.vcf.gz \
-   -O $outdir/output.vcf.gz
+   -O $outdir/output.vcf.gz 
 
 # perform hard filtering using the qual-by-depth QD score and window for snp clustering
 gatk VariantFiltration \
@@ -116,6 +135,6 @@ gatk VariantFiltration \
    --filter "FS > 30.0" \
    --filter-name "QD" \
    --filter "QD < 2.0" \
-   -O $outdir/filter.output.vcf.gz
+   -O $outdir/$SAMPLE_NAME.filter.output.vcf.gz
 
 

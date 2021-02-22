@@ -134,6 +134,16 @@ df.final <- dplyr::distinct(df.final, celltype, gene_motif, .keep_all = TRUE)
 df.sig <- dplyr::filter(df.final, pval < 0.05) %>%
   arrange(-num_celltypes, -corr)
 
+df.final$celltype <- as.factor(df.final$celltype)
+levels(df.final$celltype) <- c("PT","PTVCAM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB",
+                               "MES","FIB","ENDO","PODO","LEUK")
+
+
+df.sig$celltype <- as.factor(df.sig$celltype)
+levels(df.sig$celltype) <- c("PT","PTVCAM1","PEC","TAL","DCT1","DCT2","CNT","PC","ICA","ICB",
+                               "MES","FIB","ENDO","PODO","LEUK")
+
+
 # calculate pearson r2 for all tf-gene combos
 pearson <- cor.test(df.sig$chromvar, df.sig$rna, method="pearson", conf.level=0.95)
 max_chrom <- max(abs(df.sig$max_chrom)) + 1
@@ -164,7 +174,7 @@ pearson <- cor.test(df.pos$chromvar, df.pos$rna, method="pearson", conf.level=0.
 max_chrom <- max(abs(df.pos$max_chrom)) + 1
 max_exp <- max(abs(df.pos$max_exp)) + 1
 
-p1 <- ggplot(df.pos, aes(x=chromvar, y=rna)) +
+p2 <- ggplot(df.pos, aes(x=chromvar, y=rna)) +
   geom_smooth(method="lm", color = "darkgray") +
   geom_point(aes(color=celltype)) +
   xlab("chromVAR activity (avg_logFC)") +
@@ -176,7 +186,7 @@ p1 <- ggplot(df.pos, aes(x=chromvar, y=rna)) +
   theme_minimal() +
   geom_hline(yintercept=0) +
   geom_vline(xintercept=0) 
-p1
+p2
 
 
 
@@ -186,7 +196,7 @@ pearson <- cor.test(df.neg$chromvar, df.neg$rna, method="pearson", conf.level=0.
 max_chrom <- max(abs(df.neg$max_chrom)) + 1
 max_exp <- max(abs(df.neg$max_exp)) + 1
 
-p2 <- ggplot(df.neg, aes(x=chromvar, y=rna)) +
+p3 <- ggplot(df.neg, aes(x=chromvar, y=rna)) +
   geom_smooth(method="lm", color = "darkgray") +
   geom_point(aes(color=celltype)) +
   xlab("chromVAR activity (avg_logFC)") +
@@ -198,13 +208,13 @@ p2 <- ggplot(df.neg, aes(x=chromvar, y=rna)) +
   theme_minimal() +
   geom_hline(yintercept=0) +
   geom_vline(xintercept=0) 
-p2
+p3
 
-
-toplot <- dplyr::filter(df.final, gene_motif == "ZEB1_MA0103.3")
+gene_motif <- df.final$gene_motif[grepl("NR3C1", df.final$gene_motif)]
+toplot <- dplyr::filter(df.final, motif == "MA0113.3")
 max_chrom <- unique(toplot$max_chrom)
 max_exp <- unique(toplot$max_exp)
-p1 <- ggplot(toplot, aes(x=chromvar, y=rna)) +
+p4 <- ggplot(toplot, aes(x=chromvar, y=rna)) +
   geom_smooth(method="lm", color = "darkgray") +
   geom_point(aes(color=celltype)) +
   geom_text_repel(aes(label=celltype)) +
@@ -216,5 +226,23 @@ p1 <- ggplot(toplot, aes(x=chromvar, y=rna)) +
   theme_minimal() +
   geom_hline(yintercept=0) +
   geom_vline(xintercept=0) 
-p1
+p4
+
+gene_motif <- df.final$gene_motif[grepl("NR3C2", df.final$gene_motif)]
+toplot <- dplyr::filter(df.final, motif == "MA0727.1")
+max_chrom <- unique(toplot$max_chrom)
+max_exp <- unique(toplot$max_exp)
+p5 <- ggplot(toplot, aes(x=chromvar, y=rna)) +
+  geom_smooth(method="lm", color = "darkgray") +
+  geom_point(aes(color=celltype)) +
+  geom_text_repel(aes(label=celltype)) +
+  xlab("chromVAR activity (avg_logFC)") +
+  ylab("Gene expression (avg_logFC)") +
+  ggtitle(unique(toplot$gene), subtitle=paste0("Pearson r^2=",unique(toplot$cor)," pval=",unique(toplot$pval))) +
+  xlim(c(-max_chrom,max_chrom)) +
+  ylim(c(-max_exp,max_exp)) +
+  theme_minimal() +
+  geom_hline(yintercept=0) +
+  geom_vline(xintercept=0) 
+p5
 
