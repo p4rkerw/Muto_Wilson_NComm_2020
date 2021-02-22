@@ -1,5 +1,5 @@
 # **Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney**
-__*Yoshiharu Muto, *Parker C. Wilson, Haojia Wu, Sushrut S. Waikar, Benjamin D. Humphreys__  
+__*Yoshiharu Muto, *Parker C. Wilson, Nicolas Ledru, Haojia Wu, Henrik Dimke, Sushrut S. Waikar, Benjamin D. Humphreys__  
 *These authors contributed equally  
 
 This work has been published in Nature Communications.
