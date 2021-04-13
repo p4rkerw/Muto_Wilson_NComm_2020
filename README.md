@@ -2,7 +2,8 @@
 __*Yoshiharu Muto, *Parker C. Wilson, Nicolas Ledru, Haojia Wu, Henrik Dimke, Sushrut S. Waikar, Benjamin D. Humphreys__  
 *These authors contributed equally  
 
-This work has been accepted at Nature Communications.
+This work has been published in Nature Communications:
+Muto, Y., Wilson, P.C., Ledru, N. et al. Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney. Nat Commun 12, 2190 (2021). https://doi.org/10.1038/s41467-021-22368-w
 
 The code associated with this publication has been deposited in Zenodo 
 <a href="https://doi.org/10.5281/zenodo.4555693"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4555693.svg" alt="DOI"></a>
