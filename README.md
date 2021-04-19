@@ -8,7 +8,14 @@ The code associated with this publication has been deposited in Zenodo
 <a href="https://doi.org/10.5281/zenodo.4555693"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4555693.svg" alt="DOI"></a>
 
 The bioRxiv preprint can be found here:
-doi: https://doi.org/10.1101/2020.06.14.151167  
+doi: https://doi.org/10.1101/2020.06.14.151167
+
+Raw fastq files can be found in GEO at the following links:
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882
+
+Finalized R objects can be visualized interactively or downloaded from the cellxgene website:
+https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc
 
 
 Welcome to our GitHub repository!  
