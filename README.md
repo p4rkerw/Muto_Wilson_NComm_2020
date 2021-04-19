@@ -12,7 +12,7 @@ doi: https://doi.org/10.1101/2020.06.14.151167
 
 Raw fastq files can be found in GEO at the following links:
 
-https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302 <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882
 
 Finalized R objects can be visualized interactively or downloaded from the cellxgene website:
