@@ -2,8 +2,10 @@
 __*Yoshiharu Muto, *Parker C. Wilson, Nicolas Ledru, Haojia Wu, Henrik Dimke, Sushrut S. Waikar, Benjamin D. Humphreys__  
 *These authors contributed equally  
 
+If you use any code or workflows in this repository please cite the following manuscript:
+```
 Muto, Y., Wilson, P.C., Ledru, N. et al. Single cell transcriptional and chromatin accessibility profiling redefine cellular heterogeneity in the adult human kidney. Nat Commun 12, 2190 (2021). https://doi.org/10.1038/s41467-021-22368-w
-
+```
 The code associated with this publication has been deposited in Zenodo 
 <a href="https://doi.org/10.5281/zenodo.4555693"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4555693.svg" alt="DOI"></a>
 
@@ -117,7 +119,9 @@ deconvolution_liu_BisqueRNA.R
 find_bulk_degs_tcga.R  
 deconvolution_tcga_BisqueRNA.R  
 
-**Allele Specific Analysis:**    
+**Allele Specific Analysis:**
+The majority of the allele-specific analysis workflow has been implemented as a separate GitHub repository called 🌶️SALSA . You can check it out [here](https://github.com/p4rkerw/SALSA)
+
 These scripts can be run in publicly-available docker containers found here: [p4rkerw@dockerhub](https://hub.docker.com/search?q=p4rkerw&type=image)
 
 Each script has an example command to run the corresponding docker container  
