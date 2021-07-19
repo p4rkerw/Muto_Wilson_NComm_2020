@@ -15,6 +15,9 @@ The code associated with this publication has been deposited in Zenodo
 
 The bioRxiv preprint can be found [here](https://doi.org/10.1101/2020.06.14.151167)
 
+Find raw and annotated data files on the Human Cell Atlas data portal
+https://data.humancellatlas.org/explore/projects/2af52a13-65cb-4973-b513-39be38f2df3f
+
 Raw fastq files and count tables can be found in GEO at the following links: <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302 <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882
