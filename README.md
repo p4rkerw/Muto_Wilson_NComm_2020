@@ -19,6 +19,8 @@ Raw fastq files and count tables can be found in GEO: <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302 <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882
 
+[snATAC barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snATAC_prep/atac_barcodes.csv) and [snRNA barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snRNA_prep/rna_barcodes.csv) used for the final analysis can be found in this github repository
+
 Raw sequencing files and metadata can also found on the Human Cell Atlas data portal (but this repository does not include the snATAC index fastq): <br/>
 https://data.humancellatlas.org/explore/projects/2af52a13-65cb-4973-b513-39be38f2df3f
 
