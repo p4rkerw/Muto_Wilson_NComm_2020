@@ -15,12 +15,12 @@ The code associated with this publication has been deposited in Zenodo
 
 The bioRxiv preprint can be found [here](https://doi.org/10.1101/2020.06.14.151167)
 
-Raw sequencing files and metadata can be found on the Human Cell Atlas data portal: <br/>
-https://data.humancellatlas.org/explore/projects/2af52a13-65cb-4973-b513-39be38f2df3f
-
-Raw fastq files and count tables can also be found in GEO: <br/>
+Raw fastq files and count tables can also be found in GEO (including snATAC index fastq): <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302 <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882
+
+Raw sequencing files and metadata can also found on the Human Cell Atlas data portal (but does not include the snATAC index fastq): <br/>
+https://data.humancellatlas.org/explore/projects/2af52a13-65cb-4973-b513-39be38f2df3f
 
 Finalized R objects can be visualized interactively or downloaded from the cellxgene [website](https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc)
 
