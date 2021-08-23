@@ -21,7 +21,8 @@ https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882
 
 [snATAC barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snATAC_prep/atac_barcodes.csv) and [snRNA barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snRNA_prep/rna_barcodes.csv) used for the final analysis can be found in this github repository
 
-Raw sequencing files and metadata can also found on the Human Cell Atlas data portal (but this repository does not include the snATAC index fastq): <br/>
+Raw sequencing files and metadata can also found on the Human Cell Atlas data portal
+Note that the humancellatlas repository does not include the snATAC index fastq: <br/>
 https://data.humancellatlas.org/explore/projects/2af52a13-65cb-4973-b513-39be38f2df3f
 
 Finalized R objects can be visualized interactively or downloaded from the cellxgene [website](https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc)
