@@ -17,7 +17,7 @@ The bioRxiv preprint can be found [here](https://doi.org/10.1101/2020.06.14.1511
 
 Raw fastq files and count tables can be found in GEO or Human Cell Atlas at the links below. Note that there are two different sequencing configurations for the snATAC libraries. Samples 1-3 have an I1 index file, whereas samples 4-5 do not. The I1 index files are not needed to run cellranger-atac count on samples 4-5. Index sequences used for demultplexing are printed in the header lines of R1 and R2. R1 and R3 contain the paired-end reads and R2 contains the cell barcode information.  <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302 <br/>
-https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882 <br/>
 https://data.humancellatlas.org/explore/projects/2af52a13-65cb-4973-b513-39be38f2df3f
 
 [snATAC barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snATAC_prep/atac_barcodes.csv) and [snRNA barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snRNA_prep/rna_barcodes.csv) used for the final analysis can be found in this github repository
