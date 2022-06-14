@@ -15,10 +15,14 @@ The code associated with this publication has been deposited in Zenodo
 
 The bioRxiv preprint can be found [here](https://doi.org/10.1101/2020.06.14.151167)
 
-Raw fastq files and count tables can be found in GEO or Human Cell Atlas at the links below. Note that there are two different sequencing configurations for the snATAC libraries. Samples 1-3 have an I1 index file, whereas samples 4-5 do not. The I1 index files are not needed to run cellranger-atac count on samples 4-5. Index sequences used for demultplexing are printed in the header lines of R1 and R2. R1 and R3 contain the paired-end reads and R2 contains the cell barcode information.  <br/>
+Raw fastq files and original count tables can be found in GEO or Human Cell Atlas at the links below. Note that there are two different sequencing configurations for the snATAC libraries. Samples 1-3 have an I1 index file, whereas samples 4-5 do not. The I1 index files are not needed to run cellranger-atac count on samples 4-5. Index sequences used for demultplexing are printed in the header lines of R1 and R2. R1 and R3 contain the paired-end reads and R2 contains the cell barcode information.  <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302 <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882 <br/>
 https://data.humancellatlas.org/explore/projects/2af52a13-65cb-4973-b513-39be38f2df3f
+
+These data were processed and annotated for the development of the single cell analysis tool [GLUE](https://github.com/gao-lab/GLUE). The authors of GLUE have hosted the processed datasets for their [manuscript](https://www.nature.com/articles/s41587-022-01284-4) on their lab website. You can find more information about how they processed the data [here](https://scglue.readthedocs.io/en/latest/data.html) and you can download the files at the following links in h5ad format:
+http://download.gao-lab.org/GLUE/dataset/Muto-2021-RNA.h5ad
+http://download.gao-lab.org/GLUE/dataset/Muto-2021-ATAC.h5ad
 
 [snATAC barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snATAC_prep/atac_barcodes.csv) and [snRNA barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snRNA_prep/rna_barcodes.csv) used for the final analysis can be found in this github repository
 
