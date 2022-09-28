@@ -1,0 +1,1 @@
+The ct_allcellsCCAN_396.tsv is the UCSC CCAN interaction track from [here](https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&lastVirtModeType=default&lastVirtModeExtraState=&virtModeType=default&virtMode=0&nonVirtPosition=&position=chr20%3A44080406%2D44753709&hgsid=1460736957_F2fDrnka0isnRzTapToEXhtGJgYl)
