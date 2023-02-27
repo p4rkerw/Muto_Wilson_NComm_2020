@@ -35,8 +35,10 @@ Here you will find analysis scripts for our manuscript where we integrate paired
 Thanks,  
 Parker and Yoshi
 <br/><br/>
-![alt text](http://humphreyslab.com/wp-content/uploads/2015/12/favicon-H.jpg)  
-Visit the Humphrey's lab website:   
+Visit the Wilson lab website:<br/>
+www.parkerwilsonlab.com
+
+Visit the Humphrey's lab website:<br/>
 www.humphreyslab.com  
 <br/>
 Check out our interactive datasets with Kidney Interactive mulTiomics (KIT):  
