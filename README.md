@@ -20,9 +20,7 @@ https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151302 <br/>
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE131882 <br/>
 https://data.humancellatlas.org/explore/projects/2af52a13-65cb-4973-b513-39be38f2df3f <br/>
 
-h5ad files for the snRNA and snATAC libraries were processed and annotated for the development of the single cell analysis tool [GLUE](https://github.com/gao-lab/GLUE). The authors of GLUE have hosted the processed datasets for their [manuscript](https://www.nature.com/articles/s41587-022-01284-4) on their lab website. You can find more information about how they processed the data [here](https://scglue.readthedocs.io/en/latest/data.html) and you can download the files at the following links:<br>
-http://download.gao-lab.org/GLUE/dataset/Muto-2021-RNA.h5ad <br>
-http://download.gao-lab.org/GLUE/dataset/Muto-2021-ATAC.h5ad
+h5ad files for the snRNA and snATAC libraries were processed and annotated for the development of the single cell analysis tool [GLUE](https://github.com/gao-lab/GLUE). The authors of GLUE have hosted the processed datasets for their [manuscript](https://www.nature.com/articles/s41587-022-01284-4) on their lab website. You can find more information about how they processed the data [here](https://scglue.readthedocs.io/en/latest/data.html) and you can download the files in their repository.
 
 [snATAC barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snATAC_prep/atac_barcodes.csv) and [snRNA barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snRNA_prep/rna_barcodes.csv) used for the original analysis can be found in this github repository
 
