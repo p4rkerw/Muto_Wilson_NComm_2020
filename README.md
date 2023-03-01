@@ -24,7 +24,7 @@ h5ad files for the snRNA and snATAC libraries were processed and annotated for t
 
 [snATAC barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snATAC_prep/atac_barcodes.csv) and [snRNA barcodes](https://github.com/p4rkerw/Muto_Wilson_NComm_2020/blob/master/snRNA_prep/rna_barcodes.csv) used for the original analysis can be found in this github repository
 
-Finalized R objects can be visualized interactively or downloaded from the cellxgene [website](https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc). The snATAC object only includes the gene activity "RNA" assay and does not have a raw or normalized peak count matrix.
+Finalized R objects and h5ad files can be visualized interactively or downloaded from the cellxgene [website](https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc). The snATAC object only includes the gene activity "RNA" assay and does not have a raw or normalized peak count matrix.
 
 
 Welcome to our GitHub repository!  
